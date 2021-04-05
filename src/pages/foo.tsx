@@ -1,4 +1,3 @@
-import React from 'react';
 import image from '../react.svg';
 import { Link } from 'react-router-dom';
 

@@ -2,11 +2,12 @@
   "name": "benasb.github.io",
   "version": "1.0.0",
   "description": "Personal website",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "start": "webpack serve --config webpack/webpack.config.js --env env=dev",
     "build": "webpack --config webpack/webpack.config.js --env env=prod",
     "build-analyze": "webpack --config webpack/webpack.config.js --env env=prod --analyze",
+    "postbuild": "react-snap",
     "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\"",
     "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "serve": "cd ./build && npx serve",
@@ -21,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/BenasB/benasb.github.io/issues"
   },
-  "homepage": "https://github.com/BenasB/benasb.github.io#readme",
+  "homepage": "/",
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -56,6 +57,7 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
     "react-refresh": "^0.10.0",
+    "react-snap": "^1.23.0",
     "style-loader": "^2.0.0",
     "typescript": "^4.2.3",
     "webpack": "^5.28.0",
