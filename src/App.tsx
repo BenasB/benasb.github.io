@@ -1,13 +1,11 @@
+import { BrowserRouter as Router } from 'react-router-dom';
 import './styles.css';
-import image from './react.svg';
-import Counter from './Counter';
+import Routes from './pages/Routes';
 
 export const App: React.FC = () => {
   return (
-    <>
-      <h1>Hello World! - {process.env.NODE_ENV}</h1>
-      <img src={image} alt={'React logo'} width={300} />
-      <Counter />
-    </>
+    <Router>
+      <Routes />
+    </Router>
   );
 };
