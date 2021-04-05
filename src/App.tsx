@@ -1,5 +1,5 @@
 import { BrowserRouter as Router } from 'react-router-dom';
-import './global.scss';
+import './styles/main.scss';
 import Routes from './pages/Routes';
 
 export const App: React.FC = () => {
