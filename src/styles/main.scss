@@ -1,3 +1,37 @@
+@use './partials/_variables';
+@use './fonts';
+
 body {
-  background-color: yellow;
+  margin: 0;
+  line-height: 1;
+  font-family: 'Lato', sans-serif;
+  color: variables.$base-text-color;
+  font-size: 100%;
+
+  & * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+}
+
+h1 {
+  font-size: variables.$font-size-heading-large;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: variables.$font-size-heading-medium;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: variables.$font-size-heading-small;
+  font-weight: 500;
+}
+
+p,
+a {
+  font-size: variables.$font-size-paragraph;
 }

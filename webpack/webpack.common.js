@@ -5,6 +5,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: path.resolve(__dirname, '..', './src/index.tsx'),
   resolve: {
+    modules: [path.resolve(__dirname, '..', './src'), 'node_modules'],
     extensions: ['.tsx', '.ts', '.js'],
   },
   module: {
