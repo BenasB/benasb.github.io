@@ -18,17 +18,17 @@ body {
 
 h1 {
   font-size: variables.$font-size-heading-large;
-  font-weight: 700;
+  font-weight: variables.$font-weight-bold;
 }
 
 h2 {
   font-size: variables.$font-size-heading-medium;
-  font-weight: 700;
+  font-weight: variables.$font-weight-bold;
 }
 
 h3 {
   font-size: variables.$font-size-heading-small;
-  font-weight: 500;
+  font-weight: variables.$font-weight-regular;
 }
 
 p,

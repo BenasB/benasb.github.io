@@ -4,9 +4,11 @@
 .container {
   background-color: variables.$base-color;
   padding: 60px 0;
+  margin-bottom: 65px;
 
   @include mixins.onMobile {
     padding: 50px 0;
+    margin-bottom: 10px;
   }
 }
 
@@ -35,6 +37,10 @@
 
     &:first-child {
       margin-right: 60px;
+
+      @include mixins.onMobile {
+        margin-right: 10vw;
+      }
     }
   }
 
