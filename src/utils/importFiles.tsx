@@ -1,6 +1,6 @@
 import path from 'path';
 
-export interface LoadedComponent {
+interface LoadedComponent {
   slug: string;
   component: React.ComponentType;
 }

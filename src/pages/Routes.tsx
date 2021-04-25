@@ -1,5 +1,5 @@
 import { Switch, Route } from 'react-router-dom';
-import importFiles, { LoadedComponent } from 'utils/importFiles';
+import importFiles from 'utils/importFiles';
 import NotFoundPage from './404';
 
 const Routes = () => {
@@ -14,7 +14,7 @@ const Routes = () => {
 
   return (
     <Switch>
-      {pages.map((page: LoadedComponent, key: number) => {
+      {pages.map((page, key) => {
         return (
           <Route
             exact
@@ -24,7 +24,7 @@ const Routes = () => {
           />
         );
       })}
-      {markdownFiles.map((post: LoadedComponent, key: number) => {
+      {markdownFiles.map((post, key) => {
         return (
           <Route
             exact
