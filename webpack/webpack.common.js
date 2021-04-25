@@ -7,6 +7,7 @@ module.exports = {
   resolve: {
     modules: [path.resolve(__dirname, '..', './src'), 'node_modules'],
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: { path: require.resolve('path-browserify') },
   },
   module: {
     rules: [
@@ -26,6 +27,10 @@ module.exports = {
       {
         test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
         type: 'asset/inline',
+      },
+      {
+        test: /\.mdx?$/,
+        use: ['babel-loader', '@mdx-js/loader'],
       },
     ],
   },
