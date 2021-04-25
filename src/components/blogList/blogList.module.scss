@@ -4,18 +4,26 @@
   max-width: 1000px;
   margin: 0 auto;
   display: flex;
+  padding: 0 (15px + 15px);
 }
 
 .content {
   width: 100%;
+
+  div:not(:last-child) {
+    margin-bottom: 18px;
+  }
 }
 
 .sidePanel {
-  min-width: 200px;
-  position: relative;
+  width: min-content;
+  max-width: 200px;
+  height: min-content;
   text-align: right;
   padding-right: 5px + 15px;
   margin-right: 20px;
+  position: sticky;
+  top: 65px;
 }
 
 .sidePanelTitle {

@@ -19,19 +19,23 @@ body {
 h1 {
   font-size: variables.$font-size-heading-large;
   font-weight: variables.$font-weight-bold;
+  line-height: variables.$line-height-heading-large;
 }
 
 h2 {
   font-size: variables.$font-size-heading-medium;
   font-weight: variables.$font-weight-bold;
+  line-height: variables.$line-height-heading-medium;
 }
 
 h3 {
   font-size: variables.$font-size-heading-small;
-  font-weight: variables.$font-weight-regular;
+  font-weight: variables.$font-weight-medium;
+  line-height: variables.$line-height-heading-small;
 }
 
 p,
 a {
   font-size: variables.$font-size-paragraph;
+  line-height: variables.$line-height-paragraph;
 }

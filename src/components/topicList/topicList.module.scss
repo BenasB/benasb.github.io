@@ -1,18 +1,39 @@
 @use 'styles/partials/_variables';
 
+$slideWidth: 15px;
+
 .listItem {
-  list-style: none;
+  background-color: transparent;
   cursor: pointer;
   color: variables.$inactive-color;
   transition-duration: variables.$transition-duration-regular;
-  line-height: 35px;
+  padding-left: $slideWidth;
+
+  h3 {
+    line-height: 30px;
+    font-weight: variables.$font-weight-regular;
+  }
+
+  h3::before {
+    display: block;
+    content: attr(title);
+    font-weight: variables.$font-weight-bold;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
 
   &:hover {
-    color: variables.$base-text-color;
-    padding-right: 15px;
+    @extend .active;
+  }
+}
 
-    h3 {
-      font-weight: variables.$font-weight-bold;
-    }
+.active {
+  color: variables.$base-text-color;
+  padding-right: $slideWidth;
+  padding-left: 0;
+
+  h3 {
+    font-weight: variables.$font-weight-bold;
   }
 }
