@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import style from './blogOverview.module.scss';
 
@@ -15,7 +16,7 @@ const BlogOverview: React.FC<BlogMetaData> = ({
   path,
 }) => {
   return (
-    <Link to={path} className={style.link}>
+    <Link to={path} className={classNames(style.link, style.hoverEffect)}>
       <div className={style.container}>
         <h2>{title}</h2>
         <h3 className={style.date}>{date}</h3>
