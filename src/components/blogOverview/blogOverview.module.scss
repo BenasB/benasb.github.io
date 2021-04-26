@@ -3,6 +3,7 @@
 $slideWidth: 15px;
 
 .link {
+  display: block;
   color: inherit;
   text-decoration: none;
   transition-duration: variables.$transition-duration-regular;

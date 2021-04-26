@@ -10,7 +10,7 @@
 .content {
   width: 100%;
 
-  div:not(:last-child) {
+  a:not(:last-child) {
     margin-bottom: 18px;
   }
 }
