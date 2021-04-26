@@ -1,24 +1,28 @@
 import { Switch, Route } from 'react-router-dom';
-import importFiles from 'utils/importFiles';
-import NotFoundPage from './404';
+import { importGenericFiles, importPosts } from 'utils/importFiles';
+import Blog from './pages/index';
+import NotFoundPage from './pages/404';
 
 const Routes = () => {
-  const markdownFiles = importFiles(
+  const markdownFiles = importPosts(
     require.context('assets/blog/', false, /^(?!\.\/).*\.mdx$/)
   );
 
-  const excludedPages = ['routes', '404'];
-  const pages = importFiles(
+  const excludedPages = ['404', 'index'];
+  const pages = importGenericFiles(
     require.context('pages/', false, /^(?!\.\/).*\.tsx$/)
-  ).filter((page) => !excludedPages.includes(page.slug));
+  ).filter((page) => !excludedPages.includes(page.slug)); // This will not work in the future (if the slug adds directory)
 
   return (
     <Switch>
+      <Route exact path={'/'}>
+        <Blog loadedPostMetaData={markdownFiles.map((post) => post.metadata)} />
+      </Route>
       {pages.map((page, key) => {
         return (
           <Route
             exact
-            path={page.slug === 'index' ? '/' : `/${page.slug}`}
+            path={`/${page.slug}`}
             key={key}
             component={page.component}
           />

@@ -1,20 +1,27 @@
+import { Link } from 'react-router-dom';
 import style from './blogOverview.module.scss';
 
 export interface BlogMetaData {
-  headline: string;
+  title: string;
   date: string;
   excerpt: string;
+  path: string;
 }
 
-const BlogOverview: React.FC<BlogMetaData> = ({ headline, date, excerpt }) => {
+const BlogOverview: React.FC<BlogMetaData> = ({
+  title,
+  date,
+  excerpt,
+  path,
+}) => {
   return (
-    <div className={style.wrapper}>
+    <Link to={path} className={style.link}>
       <div className={style.container}>
-        <h2>{headline}</h2>
+        <h2>{title}</h2>
         <h3 className={style.date}>{date}</h3>
         <h3 className={style.excerpt}>{excerpt}</h3>
       </div>
-    </div>
+    </Link>
   );
 };
 
