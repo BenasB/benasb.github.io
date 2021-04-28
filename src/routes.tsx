@@ -5,13 +5,17 @@ import NotFoundPage from './pages/404';
 
 const Routes = () => {
   const markdownFiles = importPosts(
-    require.context('assets/blog/', false, /^(?!\.\/).*\.mdx$/)
+    'assets/blog/',
+    require.context('assets/blog/', true, /^(?!\.\/).*\.mdx$/)
   );
 
   const excludedPages = ['404', 'index'];
   const pages = importGenericFiles(
-    require.context('pages/', false, /^(?!\.\/).*\.tsx$/)
-  ).filter((page) => !excludedPages.includes(page.slug)); // This will not work in the future (if the slug adds directory)
+    'pages/',
+    require.context('pages/', true, /^(?!\.\/).*\.tsx$/)
+  ).filter(
+    (page) => !excludedPages.includes(page.relativeFilePathWithoutExtension)
+  );
 
   return (
     <Switch>
@@ -22,7 +26,7 @@ const Routes = () => {
         return (
           <Route
             exact
-            path={`/${page.slug}`}
+            path={`/${page.relativeFilePathWithoutExtension}`}
             key={key}
             component={page.component}
           />
@@ -32,7 +36,7 @@ const Routes = () => {
         return (
           <Route
             exact
-            path={`/blog/${post.slug}`}
+            path={`/${post.relativeFilePathWithoutExtension}`}
             key={key}
             component={post.component}
           />

@@ -7,6 +7,7 @@ $slideWidth: 15px;
   cursor: pointer;
   color: variables.$inactive-color;
   transition-duration: variables.$transition-duration-regular;
+  transition-property: padding;
   padding-left: $slideWidth;
 
   h3 {

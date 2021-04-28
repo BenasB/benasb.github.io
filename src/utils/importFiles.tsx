@@ -1,8 +1,9 @@
-import path from 'path';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { default as pathModule } from 'path';
 import { BlogMetaData } from 'components/blogOverview/blogOverview';
 
 export interface LoadedComponent {
-  slug: string;
+  relativeFilePathWithoutExtension: string;
   component: React.ComponentType;
 }
 
@@ -10,45 +11,69 @@ export interface LoadedPost extends LoadedComponent {
   metadata: BlogMetaData;
 }
 
-const getGenericData = (fileUrl: string, body: any): LoadedComponent => {
-  const slug: string = path.parse(fileUrl).name; // TODO: leave path (remove only the starting to search path)
+const getGenericData = (
+  path: string,
+  fileUrl: string,
+  body: any
+): LoadedComponent => {
   const component: React.ComponentType = body.default;
+  const relativeFilePathWithoutExtension: string =
+    pathModule.parse(fileUrl).dir === path
+      ? pathModule.parse(fileUrl).name
+      : pathModule.parse(fileUrl).dir.concat('/').replace(path, '') +
+        pathModule.parse(fileUrl).name;
 
   return {
-    slug,
+    relativeFilePathWithoutExtension,
     component,
   };
 };
 
 export const importGenericFiles = (
+  path: string,
   webpackContext: __WebpackModuleApi.RequireContext
 ): LoadedComponent[] => {
-  return importFiles<LoadedComponent>(webpackContext, getGenericData);
+  return importFiles<LoadedComponent>(path, webpackContext, getGenericData);
 };
 
 export const importPosts = (
+  path: string,
   webpackContext: __WebpackModuleApi.RequireContext
 ): LoadedPost[] => {
-  const getPostData = (fileUrl: string, body: any): LoadedPost => {
+  const getPostData = (
+    path: string,
+    fileUrl: string,
+    body: any
+  ): LoadedPost => {
+    const genericData = getGenericData(path, fileUrl, body);
+    genericData.relativeFilePathWithoutExtension =
+      'blog/' + genericData.relativeFilePathWithoutExtension;
+
     const metaData = body.metadata;
+
     return {
-      ...getGenericData(fileUrl, body),
-      metadata: { ...metaData, path: `/blog/${path.parse(fileUrl).name}` },
+      ...genericData,
+      metadata: {
+        ...metaData,
+        path: genericData.relativeFilePathWithoutExtension,
+      },
     };
   };
 
-  return importFiles<LoadedPost>(webpackContext, getPostData);
+  return importFiles<LoadedPost>(path, webpackContext, getPostData);
 };
 
 const importFiles = <Type,>(
+  path: string,
   webpackContext: __WebpackModuleApi.RequireContext,
   eachFileCallback: (
+    path: string,
     fileUrl: string,
-    body: __WebpackModuleApi.RequireContext // TODO: DETERMINE TYPE
+    body: any // Unfortunately this must be of type 'any', eslint ignore at the top of this file
   ) => Type
 ): Type[] => {
   return webpackContext.keys().map((fileUrl) => {
-    const body = webpackContext(fileUrl);
-    return eachFileCallback(fileUrl, body);
+    const body = webpackContext<Type>(fileUrl);
+    return eachFileCallback(path, fileUrl, body);
   });
 };
