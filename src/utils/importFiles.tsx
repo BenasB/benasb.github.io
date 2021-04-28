@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as pathModule } from 'path';
-import { BlogMetaData } from 'components/blogOverview/blogOverview';
+import { PostMetaData } from 'components/postOverview/postOverview';
 
 export interface LoadedComponent {
   relativeFilePathWithoutExtension: string;
@@ -8,7 +8,7 @@ export interface LoadedComponent {
 }
 
 export interface LoadedPost extends LoadedComponent {
-  metadata: BlogMetaData;
+  metadata: PostMetaData;
 }
 
 const getGenericData = (
@@ -46,16 +46,13 @@ export const importPosts = (
     body: any
   ): LoadedPost => {
     const genericData = getGenericData(path, fileUrl, body);
-    genericData.relativeFilePathWithoutExtension =
-      'blog/' + genericData.relativeFilePathWithoutExtension;
-
     const metaData = body.metadata;
 
     return {
       ...genericData,
       metadata: {
         ...metaData,
-        path: genericData.relativeFilePathWithoutExtension,
+        path: 'blog/' + genericData.relativeFilePathWithoutExtension,
       },
     };
   };

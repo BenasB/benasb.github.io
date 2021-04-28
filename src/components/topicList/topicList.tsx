@@ -2,13 +2,20 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import style from './topicList.module.scss';
 
-const TopicList: React.FC = () => {
-  const topics = ['Software', 'Hardware', 'Personal'];
+export interface TopicData {
+  title: string;
+}
+
+interface Props {
+  topics: TopicData[];
+}
+
+const TopicList: React.FC<Props> = ({ topics }) => {
   const [selectedTopic, setSelectedTopic] = useState(topics[0]);
 
   return (
     <>
-      {topics.map((topic: string, key: number) => {
+      {topics.map((topic: TopicData, key: number) => {
         return (
           <button
             key={key}
@@ -17,7 +24,7 @@ const TopicList: React.FC = () => {
               [style.active]: topic === selectedTopic,
             })}
           >
-            <h3 title={topic}>{topic}</h3>
+            <h3 title={topic.title}>{topic.title}</h3>
           </button>
         );
       })}

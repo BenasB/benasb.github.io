@@ -1,13 +1,26 @@
 import { Switch, Route } from 'react-router-dom';
 import { importGenericFiles, importPosts } from 'utils/importFiles';
-import Blog from './pages/index';
+import Index from './pages/index';
 import NotFoundPage from './pages/404';
+import { TopicData } from 'components/topicList/topicList';
+import { capitalize } from 'utils/stringManipulation';
 
 const Routes = () => {
-  const markdownFiles = importPosts(
+  const posts = importPosts(
     'assets/blog/',
     require.context('assets/blog/', true, /^(?!\.\/).*\.mdx$/)
   );
+  const postMetaData = posts.map((post) => post.metadata);
+  const topics: TopicData[] = posts.map((post) => {
+    return {
+      title: capitalize(
+        post.relativeFilePathWithoutExtension.substr(
+          0,
+          post.relativeFilePathWithoutExtension.indexOf('/')
+        )
+      ),
+    };
+  });
 
   const excludedPages = ['404', 'index'];
   const pages = importGenericFiles(
@@ -20,7 +33,7 @@ const Routes = () => {
   return (
     <Switch>
       <Route exact path={'/'}>
-        <Blog loadedPostMetaData={markdownFiles.map((post) => post.metadata)} />
+        <Index postMetaData={postMetaData} topics={topics} />
       </Route>
       {pages.map((page, key) => {
         return (
@@ -32,11 +45,11 @@ const Routes = () => {
           />
         );
       })}
-      {markdownFiles.map((post, key) => {
+      {posts.map((post, key) => {
         return (
           <Route
             exact
-            path={`/${post.relativeFilePathWithoutExtension}`}
+            path={`/blog/${post.relativeFilePathWithoutExtension}`}
             key={key}
             component={post.component}
           />

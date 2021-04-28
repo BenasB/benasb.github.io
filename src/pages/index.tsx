@@ -1,16 +1,18 @@
-import BlogList from 'components/blogList/blogList';
-import { BlogMetaData } from 'components/blogOverview/blogOverview';
+import PostList from 'components/postList/postList';
+import { PostMetaData } from 'components/postOverview/postOverview';
+import { TopicData } from 'components/topicList/topicList';
 
 interface Props {
-  loadedPostMetaData: BlogMetaData[];
+  postMetaData: PostMetaData[];
+  topics: TopicData[];
 }
 
-const Blog: React.FC<Props> = ({ loadedPostMetaData }) => {
+const Index: React.FC<Props> = ({ postMetaData, topics }) => {
   return (
     <>
-      <BlogList loadedPostMetaData={loadedPostMetaData} />
+      <PostList postMetaData={postMetaData} topics={topics} />
     </>
   );
 };
 
-export default Blog;
+export default Index;

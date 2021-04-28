@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
-import style from './blogOverview.module.scss';
+import style from './postOverview.module.scss';
 
-export interface BlogMetaData {
+export interface PostMetaData {
   title: string;
   date: string;
   excerpt: string;
   path: string;
 }
 
-const BlogOverview: React.FC<BlogMetaData> = ({
+const PostOverview: React.FC<PostMetaData> = ({
   title,
   date,
   excerpt,
@@ -25,4 +25,4 @@ const BlogOverview: React.FC<BlogMetaData> = ({
   );
 };
 
-export default BlogOverview;
+export default PostOverview;
