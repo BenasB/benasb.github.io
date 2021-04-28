@@ -53,6 +53,13 @@ export const importPosts = (
       metadata: {
         ...metaData,
         path: 'blog/' + genericData.relativeFilePathWithoutExtension,
+        topic:
+          genericData.relativeFilePathWithoutExtension.indexOf('/') === -1
+            ? 'Uncategorized'
+            : genericData.relativeFilePathWithoutExtension.substr(
+                0,
+                genericData.relativeFilePathWithoutExtension.indexOf('/')
+              ),
       },
     };
   };

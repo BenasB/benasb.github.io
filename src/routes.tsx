@@ -11,15 +11,10 @@ const Routes = () => {
     require.context('assets/blog/', true, /^(?!\.\/).*\.mdx$/)
   );
   const postMetaData = posts.map((post) => post.metadata);
-  const topics: TopicData[] = posts.map((post) => {
-    return {
-      title: capitalize(
-        post.relativeFilePathWithoutExtension.substr(
-          0,
-          post.relativeFilePathWithoutExtension.indexOf('/')
-        )
-      ),
-    };
+  const topics: TopicData[] = [];
+  posts.forEach((post) => {
+    const title = capitalize(post.metadata.topic);
+    if (!topics.some((t) => t.title === title)) topics.push({ title: title });
   });
 
   const excludedPages = ['404', 'index'];
