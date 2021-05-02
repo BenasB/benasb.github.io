@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as pathModule } from 'path';
 import { PostMetaData } from 'components/postOverview/postOverview';
+import { getUntilFirstDelimiter } from './stringManipulation';
 
 export interface LoadedComponent {
   relativeFilePathWithoutExtension: string;
@@ -53,13 +54,11 @@ export const importPosts = (
       metadata: {
         ...metaData,
         path: 'blog/' + genericData.relativeFilePathWithoutExtension,
-        topic:
-          genericData.relativeFilePathWithoutExtension.indexOf('/') === -1
-            ? 'Uncategorized'
-            : genericData.relativeFilePathWithoutExtension.substr(
-                0,
-                genericData.relativeFilePathWithoutExtension.indexOf('/')
-              ),
+        topic: getUntilFirstDelimiter(
+          genericData.relativeFilePathWithoutExtension,
+          '/',
+          'Uncategorized'
+        ),
       },
     };
   };

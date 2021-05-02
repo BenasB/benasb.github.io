@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import style from './topicList.module.scss';
+import { capitalize } from 'utils/stringManipulation';
 
 export interface TopicData {
   title: string;
@@ -8,9 +9,10 @@ export interface TopicData {
 
 interface Props {
   topics: TopicData[];
+  onTopicChange: (newTopic: TopicData) => void;
 }
 
-const TopicList: React.FC<Props> = ({ topics }) => {
+const TopicList: React.FC<Props> = ({ topics, onTopicChange }) => {
   const [selectedTopic, setSelectedTopic] = useState(topics[0]);
 
   return (
@@ -19,12 +21,15 @@ const TopicList: React.FC<Props> = ({ topics }) => {
         return (
           <button
             key={key}
-            onClick={() => setSelectedTopic(topic)}
+            onClick={() => {
+              setSelectedTopic(topic);
+              onTopicChange(topic);
+            }}
             className={classNames(style.listItem, {
               [style.active]: topic === selectedTopic,
             })}
           >
-            <h3 title={topic.title}>{topic.title}</h3>
+            <h3 title={capitalize(topic.title)}>{capitalize(topic.title)}</h3>
           </button>
         );
       })}

@@ -3,6 +3,8 @@
 $slideWidth: 15px;
 
 .listItem {
+  display: block;
+  margin-left: auto;
   background-color: transparent;
   cursor: pointer;
   color: variables.$inactive-color;
