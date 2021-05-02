@@ -27,8 +27,8 @@ jobs:
 
       - name: Setup git authentication
         run: |
-        git config --global user.email "29711974+BenasB@users.noreply.github.com"
-        git config --global user.name "BenasB"
+          git config --global user.email "29711974+BenasB@users.noreply.github.com"
+          git config --global user.name "BenasB"
 
       - name: Run deploy script
         run: npm run deploy-gh-pages
