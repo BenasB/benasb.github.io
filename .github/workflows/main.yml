@@ -1,14 +1,9 @@
-name: CI
+name: Deployment
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -24,6 +19,11 @@ jobs:
 
       - name: Run build script
         run: npm run build
+
+      - name: Setup git authentication
+        run: |
+          git config --global user.email "29711974+BenasB@users.noreply.github.com"
+          git config --global user.name "BenasB"
 
       - name: Run deploy script
         run: npm run deploy-gh-pages
