@@ -48,6 +48,7 @@ export const importPosts = (
   ): LoadedPost => {
     const genericData = getGenericData(path, fileUrl, body);
     const metaData = body.metadata;
+    metaData.date = new Date(metaData.date);
 
     return {
       ...genericData,
