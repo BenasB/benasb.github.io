@@ -12,6 +12,8 @@ interface Props {
 
 const PostList: React.FC<Props> = ({ postMetaData, topics }) => {
   const getPostsByTopic = (topic: TopicData): PostMetaData[] => {
+    postMetaData.sort((a, b) => b.date.getTime() - a.date.getTime());
+
     if (topic.title !== 'all')
       return postMetaData.filter((post) => post.topic === topic.title);
     else return postMetaData;
