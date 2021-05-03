@@ -58,7 +58,7 @@ export const importPosts = (
         topic: getUntilFirstDelimiter(
           genericData.relativeFilePathWithoutExtension,
           '/',
-          'Uncategorized'
+          'uncategorized'
         ),
       },
     };

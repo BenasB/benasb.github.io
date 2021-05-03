@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Redirect, useParams } from 'react-router-dom';
 import style from './postList.module.scss';
 import TopicList, { TopicData } from 'components/topicList/topicList';
 import PostOverview, {
@@ -11,6 +11,9 @@ interface Props {
 }
 
 const PostList: React.FC<Props> = ({ postMetaData, topics }) => {
+  const { topic } = useParams<{ topic: string }>();
+  const selectedTopic: TopicData = topic ? { title: topic } : { title: 'all' };
+
   const getPostsByTopic = (topic: TopicData): PostMetaData[] => {
     postMetaData.sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -19,19 +22,16 @@ const PostList: React.FC<Props> = ({ postMetaData, topics }) => {
     else return postMetaData;
   };
 
-  const [shownPosts, setShownPosts] = useState<PostMetaData[]>(
-    getPostsByTopic(topics[0])
-  );
+  const shownPosts: PostMetaData[] = getPostsByTopic(selectedTopic);
 
-  const onTopicChange = (newTopic: TopicData) => {
-    setShownPosts(getPostsByTopic(newTopic));
-  };
+  // Topic was provided, but no posts shown, redirect to 404
+  if (shownPosts.length === 0) return <Redirect to={'/404'} />;
 
   return (
     <div className={style.container}>
       <div className={style.sidePanel}>
         <h2 className={style.sidePanelTitle}>Topics</h2>
-        <TopicList topics={topics} onTopicChange={onTopicChange} />
+        <TopicList topics={topics} />
         <div className={style.pipeDecoration} />
       </div>
       <div className={style.content}>

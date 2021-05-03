@@ -1,4 +1,4 @@
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { importGenericFiles, importPosts } from 'utils/importFiles';
 import Index from './pages/index';
 import NotFoundPage from './pages/404';
@@ -26,8 +26,8 @@ const Routes = () => {
 
   return (
     <Switch>
-      <Route exact path={'/'}>
-        <Index postMetaData={postMetaData} topics={topics} />
+      <Route exact path="/">
+        <Redirect to={'/blog'} />
       </Route>
       {pages.map((page, key) => {
         return (
@@ -49,8 +49,11 @@ const Routes = () => {
           />
         );
       })}
+      <Route path={'/blog/:topic?'}>
+        <Index postMetaData={postMetaData} topics={topics} />
+      </Route>
       {/* Supposed to be the last, because this is where the route falls back if no other route befor it matches */}
-      <Route component={NotFoundPage} />{' '}
+      <Route component={NotFoundPage} />
     </Switch>
   );
 };

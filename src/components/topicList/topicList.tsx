@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import classNames from 'classnames';
 import style from './topicList.module.scss';
 import { capitalize } from 'utils/stringManipulation';
+import { Link, useParams } from 'react-router-dom';
 
 export interface TopicData {
   title: string;
@@ -9,28 +9,27 @@ export interface TopicData {
 
 interface Props {
   topics: TopicData[];
-  onTopicChange: (newTopic: TopicData) => void;
 }
 
-const TopicList: React.FC<Props> = ({ topics, onTopicChange }) => {
-  const [selectedTopic, setSelectedTopic] = useState(topics[0]);
+const TopicList: React.FC<Props> = ({ topics }) => {
+  const { topic } = useParams<{ topic: string }>();
+  const selectedTopic: TopicData = topic ? { title: topic } : { title: 'all' };
 
   return (
     <>
-      {topics.map((topic: TopicData, key: number) => {
+      {topics.map((iterationTopic: TopicData, key: number) => {
         return (
-          <button
+          <Link
+            to={`/blog/${iterationTopic.title}`}
             key={key}
-            onClick={() => {
-              setSelectedTopic(topic);
-              onTopicChange(topic);
-            }}
             className={classNames(style.listItem, {
-              [style.active]: topic === selectedTopic,
+              [style.active]: iterationTopic.title === selectedTopic.title,
             })}
           >
-            <h3 title={capitalize(topic.title)}>{capitalize(topic.title)}</h3>
-          </button>
+            <h3 title={capitalize(iterationTopic.title)}>
+              {capitalize(iterationTopic.title)}
+            </h3>
+          </Link>
         );
       })}
     </>

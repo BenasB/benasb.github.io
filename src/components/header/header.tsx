@@ -10,7 +10,7 @@ const Header = () => {
           <img src={logo} alt="logo" />
         </Link>
         <nav className={style.navigation}>
-          <Link to="/">Blog</Link>
+          <Link to="/blog">Blog</Link>
           <Link to="/me">Me</Link>
         </nav>
       </div>

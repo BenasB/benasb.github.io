@@ -4,13 +4,11 @@ $slideWidth: 15px;
 
 .listItem {
   display: block;
-  margin-left: auto;
-  background-color: transparent;
-  cursor: pointer;
   color: variables.$inactive-color;
   transition-duration: variables.$transition-duration-regular;
   transition-property: padding;
   padding-left: $slideWidth;
+  text-decoration: none;
 
   h3 {
     line-height: 30px;
