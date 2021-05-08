@@ -18,7 +18,7 @@ const Routes = () => {
     if (!topics.some((t) => t.title === title)) topics.push({ title: title });
   });
 
-  const excludedPages = ['404', 'index'];
+  const excludedPages = ['404', 'index', 'post'];
   const pages = importGenericFiles(
     'pages/',
     require.context('pages/', true, /^(?!\.\/).*\.tsx$/)
@@ -48,7 +48,7 @@ const Routes = () => {
             path={`/blog/${post.relativeFilePathWithoutExtension}`}
             key={key}
           >
-            <Post Mdx={post.component} />
+            <Post {...post} />
           </Route>
         );
       })}

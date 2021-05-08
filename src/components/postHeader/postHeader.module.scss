@@ -1,0 +1,22 @@
+@use 'styles/partials/_variables';
+
+.topic {
+  text-decoration: none;
+  color: variables.$base-text-color;
+
+  * {
+    display: inline;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date {
+  color: variables.$inactive-color;
+}
