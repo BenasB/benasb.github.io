@@ -2,6 +2,7 @@
 import { default as pathModule } from 'path';
 import { PostMetaData } from 'components/postOverview/postOverview';
 import { getUntilFirstDelimiter } from './stringManipulation';
+import GlobalTopics from 'enums/globalTopics';
 
 export interface LoadedComponent {
   relativeFilePathWithoutExtension: string;
@@ -58,7 +59,7 @@ export const importPosts = (
         topic: getUntilFirstDelimiter(
           genericData.relativeFilePathWithoutExtension,
           '/',
-          'Uncategorized'
+          GlobalTopics.UNCATEGORIZED
         ),
       },
     };
