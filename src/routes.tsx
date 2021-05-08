@@ -1,8 +1,10 @@
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { importGenericFiles, importPosts } from 'utils/importFiles';
 import Index from './pages/index';
+import Post from './pages/post';
 import NotFoundPage from './pages/404';
 import { TopicData } from 'components/topicList/topicList';
+import GlobalTopics from 'enums/globalTopics';
 
 const Routes = () => {
   const posts = importPosts(
@@ -10,7 +12,7 @@ const Routes = () => {
     require.context('assets/blog/', true, /^(?!\.\/).*\.mdx$/)
   );
   const postMetaData = posts.map((post) => post.metadata);
-  const topics: TopicData[] = [{ title: 'all' }];
+  const topics: TopicData[] = [{ title: GlobalTopics.ALL }];
   posts.forEach((post) => {
     const title = post.metadata.topic;
     if (!topics.some((t) => t.title === title)) topics.push({ title: title });
@@ -45,8 +47,9 @@ const Routes = () => {
             exact
             path={`/blog/${post.relativeFilePathWithoutExtension}`}
             key={key}
-            component={post.component}
-          />
+          >
+            <Post Mdx={post.component} />
+          </Route>
         );
       })}
       <Route path={'/blog/:topic?'}>

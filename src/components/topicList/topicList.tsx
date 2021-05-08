@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import style from './topicList.module.scss';
 import { capitalize } from 'utils/stringManipulation';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import GlobalTopics from 'enums/globalTopics';
 
 export interface TopicData {
   title: string;
@@ -9,18 +10,20 @@ export interface TopicData {
 
 interface Props {
   topics: TopicData[];
+  selectedTopic: TopicData;
 }
 
-const TopicList: React.FC<Props> = ({ topics }) => {
-  const { topic } = useParams<{ topic: string }>();
-  const selectedTopic: TopicData = topic ? { title: topic } : { title: 'all' };
-
+const TopicList: React.FC<Props> = ({ topics, selectedTopic }) => {
   return (
     <>
       {topics.map((iterationTopic: TopicData, key: number) => {
         return (
           <Link
-            to={`/blog/${iterationTopic.title}`}
+            to={
+              iterationTopic.title === GlobalTopics.ALL
+                ? '/blog'
+                : `/blog/${iterationTopic.title}`
+            }
             key={key}
             className={classNames(style.listItem, {
               [style.active]: iterationTopic.title === selectedTopic.title,
