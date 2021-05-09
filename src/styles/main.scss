@@ -8,7 +8,7 @@ body {
   color: variables.$base-text-color;
   font-size: 100%;
 
-  & * {
+  & *:not(hr) {
     box-sizing: border-box;
     margin: 0;
     padding: 0;

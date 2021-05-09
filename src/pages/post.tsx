@@ -1,10 +1,11 @@
+import style from 'styles/post.module.scss';
 import { createElement } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import { LoadedPost } from 'utils/importFiles';
 import PostHeader from 'components/postHeader/postHeader';
 
 const MyParagraph = (props: { children: string }) => (
-  <p style={{ textAlign: 'justify' }} {...props} />
+  <p className={style.p} {...props} />
 );
 
 const styles = {
@@ -15,7 +16,9 @@ const Post: React.FC<LoadedPost> = ({ component, metadata }) => {
   return (
     <>
       <PostHeader {...metadata} />
-      <MDXProvider components={styles}>{createElement(component)}</MDXProvider>
+      <MDXProvider components={styles}>
+        <div className={style.content}>{createElement(component)}</div>
+      </MDXProvider>
     </>
   );
 };

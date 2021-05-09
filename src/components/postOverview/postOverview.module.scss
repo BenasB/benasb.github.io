@@ -10,12 +10,14 @@ $slideWidth: 15px;
   transition-duration: variables.$transition-duration-regular;
   transition-property: padding;
 
-  &:hover {
-    padding-left: 15px;
-    padding-right: 0;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      padding-left: 15px;
+      padding-right: 0;
 
-    .container {
-      box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.25);
+      .container {
+        box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.25);
+      }
     }
   }
 
