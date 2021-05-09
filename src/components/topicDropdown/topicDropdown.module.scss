@@ -1,0 +1,44 @@
+@use 'styles/partials/_variables';
+
+.container {
+  background-color: variables.$inverse-text-color;
+  position: sticky;
+  top: 0;
+  padding: 15px 10px;
+  border-bottom: 2px solid variables.$inactive-color;
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+}
+
+.rotate180 {
+  transition-duration: variables.$transition-duration-regular;
+  transition-property: transform;
+  transform: rotateZ(180deg);
+}
+
+.rotate0 {
+  transition-duration: variables.$transition-duration-regular;
+  transition-property: transform;
+  transform: rotateZ(0deg);
+}
+
+.links {
+  margin-top: 10px;
+}
+
+.link {
+  text-decoration: none;
+  color: variables.$base-text-color;
+
+  h3 {
+    line-height: 30px;
+    font-weight: variables.$font-weight-regular;
+  }
+}

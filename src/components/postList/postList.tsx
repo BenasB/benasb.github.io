@@ -34,7 +34,7 @@ const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
         </div>
       </DesktopView>
       <MobileView>
-        <TopicDropdown />
+        <TopicDropdown topics={topics} selectedTopic={selectedTopic} />
       </MobileView>
       <div className={style.content}>
         {shownPosts.map((data: PostMetaData, key: number) => {
