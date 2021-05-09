@@ -1,7 +1,12 @@
 @use 'styles/partials/_variables';
+@use 'styles/partials/_mixins';
 
 .container {
   display: flex;
+
+  @include mixins.onMobile {
+    flex-direction: column;
+  }
 }
 
 .content {

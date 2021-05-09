@@ -4,6 +4,8 @@ import PostOverview, {
   PostMetaData,
 } from 'components/postOverview/postOverview';
 import GlobalTopics from 'enums/globalTopics';
+import { DesktopView, MobileView } from 'utils/viewQueries';
+import TopicDropdown from 'components/topicDropdown/topicDropdown';
 
 interface Props {
   postMetaData: PostMetaData[];
@@ -24,11 +26,16 @@ const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
 
   return (
     <div className={style.container}>
-      <div className={style.sidePanel}>
-        <h2 className={style.sidePanelTitle}>Topics</h2>
-        <TopicList topics={topics} selectedTopic={selectedTopic} />
-        <div className={style.pipeDecoration} />
-      </div>
+      <DesktopView>
+        <div className={style.sidePanel}>
+          <h2 className={style.sidePanelTitle}>Topics</h2>
+          <TopicList topics={topics} selectedTopic={selectedTopic} />
+          <div className={style.pipeDecoration} />
+        </div>
+      </DesktopView>
+      <MobileView>
+        <TopicDropdown topics={topics} selectedTopic={selectedTopic} />
+      </MobileView>
       <div className={style.content}>
         {shownPosts.map((data: PostMetaData, key: number) => {
           return <PostOverview {...data} key={key} />;

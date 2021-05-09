@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const PostHeader: React.FC<PostMetaData> = (metadata) => {
   return (
-    <>
+    <div className={style.header}>
       <div className={style.topRow}>
         <Link to={`/blog/${metadata.topic}`} className={style.topic}>
           <img src={arrow} alt={'left arrow'} width={15} height={15} />
@@ -17,7 +17,7 @@ const PostHeader: React.FC<PostMetaData> = (metadata) => {
         </h3>
       </div>
       <h1>{metadata.title}</h1>
-    </>
+    </div>
   );
 };
 

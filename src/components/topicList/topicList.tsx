@@ -16,22 +16,20 @@ interface Props {
 const TopicList: React.FC<Props> = ({ topics, selectedTopic }) => {
   return (
     <>
-      {topics.map((iterationTopic: TopicData, key: number) => {
+      {topics.map((topic: TopicData, key: number) => {
         return (
           <Link
             to={
-              iterationTopic.title === GlobalTopics.ALL
+              topic.title === GlobalTopics.ALL
                 ? '/blog'
-                : `/blog/${iterationTopic.title}`
+                : `/blog/${topic.title}`
             }
             key={key}
             className={classNames(style.listItem, {
-              [style.active]: iterationTopic.title === selectedTopic.title,
+              [style.active]: topic.title === selectedTopic.title,
             })}
           >
-            <h3 title={capitalize(iterationTopic.title)}>
-              {capitalize(iterationTopic.title)}
-            </h3>
+            <h3 title={capitalize(topic.title)}>{capitalize(topic.title)}</h3>
           </Link>
         );
       })}
