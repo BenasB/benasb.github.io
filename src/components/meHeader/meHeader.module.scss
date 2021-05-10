@@ -1,0 +1,35 @@
+@use 'styles/partials/_mixins';
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+  margin-bottom: 50px;
+
+  @include mixins.onMobile {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  // For the LazyLoadImage component
+  span {
+    @include mixins.onMobile {
+      margin: 0 auto;
+    }
+  }
+}
+
+.image {
+  clip-path: circle(110px at center);
+  margin-right: 10px;
+}
+
+.info {
+  & > *:not(:last-child) {
+    margin-bottom: 5px;
+  }
+}
+
+.socials > *:not(:last-child) {
+  margin-right: 20px;
+}

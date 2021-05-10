@@ -1,0 +1,11 @@
+.title {
+  margin-bottom: 16px;
+}
+
+.text {
+  text-align: justify;
+
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
+}
