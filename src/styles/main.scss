@@ -1,5 +1,6 @@
 @use './partials/_variables';
-@use './fonts';
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
 
 body {
   margin: 0;
@@ -23,7 +24,7 @@ h1 {
 
 h2 {
   font-size: variables.$font-size-heading-medium;
-  font-weight: variables.$font-weight-bold;
+  font-weight: variables.$font-weight-medium;
   line-height: variables.$line-height-heading-medium;
 }
 
