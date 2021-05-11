@@ -4,7 +4,7 @@ import PostOverview, {
   PostMetaData,
 } from 'components/postOverview/postOverview';
 import GlobalTopics from 'enums/globalTopics';
-import { DesktopView, MobileView } from 'utils/viewQueries';
+import { DefaultView, MobileView } from 'utils/viewQueries';
 import TopicDropdown from 'components/topicDropdown/topicDropdown';
 
 interface Props {
@@ -26,13 +26,13 @@ const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
 
   return (
     <div className={style.container}>
-      <DesktopView>
+      <DefaultView>
         <div className={style.sidePanel}>
           <h2 className={style.sidePanelTitle}>Topics</h2>
           <TopicList topics={topics} selectedTopic={selectedTopic} />
           <div className={style.pipeDecoration} />
         </div>
-      </DesktopView>
+      </DefaultView>
       <MobileView>
         <TopicDropdown topics={topics} selectedTopic={selectedTopic} />
       </MobileView>

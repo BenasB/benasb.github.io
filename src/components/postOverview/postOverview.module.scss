@@ -46,4 +46,5 @@ $slideWidth: 15px;
 .excerpt {
   @extend .overviewText;
   text-align: justify;
+  font-weight: variables.$font-weight-regular;
 }

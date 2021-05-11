@@ -1,9 +1,11 @@
-import MediaQuery from 'react-responsive';
+import { useMediaQuery } from 'react-responsive';
 
 export const MobileView: React.FC = ({ children }) => {
-  return <MediaQuery maxWidth={576}>{children}</MediaQuery>;
+  const isMobile = useMediaQuery({ maxWidth: 576 });
+  return isMobile ? <>{children}</> : null;
 };
 
-export const DesktopView: React.FC = ({ children }) => {
-  return <MediaQuery minWidth={577}>{children}</MediaQuery>;
+export const DefaultView: React.FC = ({ children }) => {
+  const isNotMobile = useMediaQuery({ minWidth: 577 });
+  return isNotMobile ? <>{children}</> : null;
 };
