@@ -4,8 +4,9 @@ import PostOverview, {
   PostMetaData,
 } from 'components/postOverview/postOverview';
 import GlobalTopics from 'enums/globalTopics';
-import { DefaultView, MobileView } from 'utils/viewQueries';
 import TopicDropdown from 'components/topicDropdown/topicDropdown';
+import { useMediaQuery } from 'react-responsive';
+import Breakpoints from 'enums/breakpoints';
 
 interface Props {
   postMetaData: PostMetaData[];
@@ -14,6 +15,17 @@ interface Props {
 }
 
 const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
+  const isMobile = useMediaQuery({ maxWidth: Breakpoints.MOBILE });
+  const topicPanel = isMobile ? (
+    <div className={style.sidePanel}>
+      <h2 className={style.sidePanelTitle}>Topics</h2>
+      <TopicList topics={topics} selectedTopic={selectedTopic} />
+      <div className={style.pipeDecoration} />
+    </div>
+  ) : (
+    <TopicDropdown topics={topics} selectedTopic={selectedTopic} />
+  );
+
   const getPostsByTopic = (topic: TopicData): PostMetaData[] => {
     postMetaData.sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -26,16 +38,7 @@ const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
 
   return (
     <div className={style.container}>
-      <DefaultView>
-        <div className={style.sidePanel}>
-          <h2 className={style.sidePanelTitle}>Topics</h2>
-          <TopicList topics={topics} selectedTopic={selectedTopic} />
-          <div className={style.pipeDecoration} />
-        </div>
-      </DefaultView>
-      <MobileView>
-        <TopicDropdown topics={topics} selectedTopic={selectedTopic} />
-      </MobileView>
+      {topicPanel}
       <div className={style.content}>
         {shownPosts.map((data: PostMetaData, key: number) => {
           return <PostOverview {...data} key={key} />;
