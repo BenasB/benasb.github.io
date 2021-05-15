@@ -1,4 +1,5 @@
 @use 'styles/partials/_mixins';
+@use 'styles/partials/_variables';
 
 .container {
   display: flex;
@@ -30,6 +31,18 @@
   }
 }
 
-.socials > *:not(:last-child) {
-  margin-right: 20px;
+.socials > * {
+  display: inline-block;
+  transition-duration: variables.$transition-duration-fast;
+  transition-property: transform;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: scale(0.9);
+    }
+  }
+
+  &:not(:last-child) {
+    margin-right: 20px;
+  }
 }
