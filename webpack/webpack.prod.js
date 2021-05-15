@@ -25,13 +25,17 @@ module.exports = {
         exclude: /\.module.(s(a|c)ss)$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ],
   },
   devtool: 'source-map',
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css',
+      filename: '[name].[fullhash].css',
+      chunkFilename: '[id].[fullhash].css',
     }),
   ],
 };
