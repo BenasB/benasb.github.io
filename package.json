@@ -11,7 +11,7 @@
     "deploy-gh-pages": "gh-pages -d build",
     "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\"",
     "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "serve": "cd ./build && npx serve",
+    "serve": "serve ./build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -67,10 +67,10 @@
     "prettier": "^2.2.1",
     "react-lazy-load-image-component": "^1.5.1",
     "react-refresh": "^0.10.0",
-    "react-responsive": "^8.2.0",
     "react-snap": "^1.23.0",
     "sass": "^1.32.8",
     "sass-loader": "^11.0.1",
+    "serve": "^11.3.2",
     "style-loader": "^2.0.0",
     "typescript": "^4.2.3",
     "webpack": "^5.28.0",

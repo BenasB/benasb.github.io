@@ -22,6 +22,18 @@
   margin-right: 20px;
   position: sticky;
   top: 65px;
+
+  @include mixins.onMobile {
+    display: none;
+  }
+}
+
+.sidePanelMobile {
+  display: none;
+
+  @include mixins.onMobile {
+    display: block;
+  }
 }
 
 .sidePanelTitle {

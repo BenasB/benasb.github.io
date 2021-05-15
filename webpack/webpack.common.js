@@ -32,10 +32,6 @@ module.exports = {
         test: /\.mdx?$/,
         use: ['babel-loader', '@mdx-js/loader'],
       },
-      {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
-      },
     ],
   },
   output: {
