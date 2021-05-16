@@ -8,8 +8,26 @@ const Me: React.FC = () => {
       <MeTextSection
         title={'Who am I?'}
         text={[
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec efficitur erat. Aenean lobortis mauris sit amet mattis malesuada. Duis tincidunt fringilla neque, at pellentesque velit. Nunc bibendum quis purus sit amet pulvinar. In nec pharetra dui. Cras rutrum erat at orci auctor ultrices. Proin at neque sed orci efficitur volutpat sit amet sit amet elit. Praesent quis dolor tincidunt, scelerisque nisl nec, tempor odio. Proin a pretium tellus. Phasellus sed augue nisi. Nulla in aliquet tortor. Aliquam purus lacus, auctor sit amet auctor quis, consequat quis nulla.',
-          'Nunc placerat nec dolor quis sollicitudin. Phasellus sollicitudin velit nec vehicula elementum. Proin eu diam eu nisi rhoncus mollis. Vivamus vitae eros eu eros elementum feugiat ac non elit. Etiam vestibulum tellus diam, quis imperdiet odio tempor ut. Curabitur accumsan ligula et elit maximus, vel sollicitudin metus condimentum. Duis id lacinia dui. Praesent quis tellus vestibulum, bibendum tellus sit amet, posuere justo. Duis dapibus, augue in luctus accumsan, lectus libero venenatis augue, feugiat rhoncus eros felis et orci. Ut maximus lobortis aliquam. Praesent condimentum urna eu facilisis bibendum. Nullam a rhoncus mi, id pellentesque odio.',
+          "I'm a young developer with a passion for computer science, software, hardware and technology in general.",
+          "I got into this field when I was in school year 5 or 6 after setting myself a goal that I would learn to create video games. It's been a wild ride and initially I didn't realize what I was getting into. However, I got completely carried away by the massive amount of knowledge there was to gain and decided that I find this extremely interesting and I should spend my time trying to learn as much as I can.",
+          'Since then, I have worked with different types of programming languages (C#, C/C++, JS), frameworks (ASP.NET Core, SFML, MonoGame, WPF, React) and applied my skills in practice whilst developing numerous web, desktop and mobile projects. To add to that, I also honed my hardware skills working on projects with the help of an Arduino or a Raspberry Pi.',
+          'My personal goal while coding is to write readable, easily maintainable, universal and reusable code. Although sometimes hard to achieve, I find that this mentality allows me to grow and learn as a developer and an individual the most.',
+        ]}
+      />
+
+      <MeTextSection
+        title={'What am I up to now?'}
+        text={[
+          "After dropping out of university in 2020, I took an amazing opportunity to work for a Lithuanian fintech company as a front end developer. Although I did not have a lot of experience working with front end technologies at the start, I managed to learn quickly and adapt to my new requirements. My day-to-day tasks make use of technologies such as React, Typescript, Node.js, Gatsby and others. I certainly learned a lot since the start of my professional career and I'm glad such a possibility emerged.",
+          'I plan to start studying again in autumn 2021.',
+        ]}
+      />
+
+      <MeTextSection
+        title={'Why a blog?'}
+        text={[
+          'I have decided to start this project mainly to learn to organize, write out my thoughts and share stories that maybe someone else will find insightful, helpful or even relatable. My goal with this project is to produce technical, engineering blogs/tutorials and also personal, thoughtful posts about my life or what I find interesting from the non-technical side as well.',
+          'If, by any chance, someone enjoys reading it – thank you sincerely.',
         ]}
       />
     </>
