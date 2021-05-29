@@ -19,11 +19,7 @@ const TopicList: React.FC<Props> = ({ topics, selectedTopic }) => {
       {topics.map((topic: TopicData, key: number) => {
         return (
           <Link
-            to={
-              topic.title === GlobalTopics.ALL
-                ? '/blog'
-                : `/blog/${topic.title}`
-            }
+            to={topic.title === GlobalTopics.ALL ? '/' : `/${topic.title}`}
             key={key}
             className={classNames(style.listItem, {
               [style.active]: topic.title === selectedTopic.title,

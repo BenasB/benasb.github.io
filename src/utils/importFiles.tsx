@@ -55,7 +55,7 @@ export const importPosts = (
       ...genericData,
       metadata: {
         ...metaData,
-        path: 'blog/' + genericData.relativeFilePathWithoutExtension,
+        path: genericData.relativeFilePathWithoutExtension,
         topic: getUntilFirstDelimiter(
           genericData.relativeFilePathWithoutExtension,
           '/',
