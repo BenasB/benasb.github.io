@@ -8,7 +8,7 @@ const PostHeader: React.FC<PostMetaData> = (metadata) => {
   return (
     <div className={style.header}>
       <div className={style.topRow}>
-        <Link to={`/blog/${metadata.topic}`} className={style.topic}>
+        <Link to={`/${metadata.topic}`} className={style.topic}>
           <img src={arrow} alt={'left arrow'} width={15} height={15} />
           <h3>{capitalize(metadata.topic)}</h3>
         </Link>

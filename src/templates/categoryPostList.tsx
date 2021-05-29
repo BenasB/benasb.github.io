@@ -3,14 +3,14 @@ import { PostMetaData } from 'components/postOverview/postOverview';
 import { TopicData } from 'components/topicList/topicList';
 import GlobalTopics from 'enums/globalTopics';
 import { useParams } from 'react-router-dom';
-import NotFoundPage from './404';
+import NotFoundPage from '../pages/404';
 
 interface Props {
   postMetaData: PostMetaData[];
   topics: TopicData[];
 }
 
-const Index: React.FC<Props> = ({ topics, postMetaData }) => {
+const CategoryPostList: React.FC<Props> = ({ topics, postMetaData }) => {
   const { topic } = useParams<{ topic: string }>();
   const selectedTopic: TopicData = topic
     ? { title: topic }
@@ -27,4 +27,4 @@ const Index: React.FC<Props> = ({ topics, postMetaData }) => {
   else return <NotFoundPage />;
 };
 
-export default Index;
+export default CategoryPostList;

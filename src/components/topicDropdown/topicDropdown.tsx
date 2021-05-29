@@ -46,11 +46,7 @@ const TopicDropdown: React.FC<Props> = ({ topics, selectedTopic }) => {
             return (
               <Link
                 className={style.link}
-                to={
-                  topic.title === GlobalTopics.ALL
-                    ? '/blog'
-                    : `/blog/${topic.title}`
-                }
+                to={topic.title === GlobalTopics.ALL ? '/' : `/${topic.title}`}
                 onClick={() => setdropdownOpen(false)}
                 key={key}
               >
