@@ -15,7 +15,9 @@ const CodeBlock: React.FC<{ className: string }> = ({
   children,
   className,
 }) => {
-  const language = className.replace(/language-/, '').toLowerCase() as Language;
+  const language = className
+    ?.replace(/language-/, '')
+    .toLowerCase() as Language;
 
   return (
     <Highlight
