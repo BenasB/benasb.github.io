@@ -1,7 +1,18 @@
-.content *:not(:last-child) {
+@use 'styles/partials/_variables';
+
+.content > *:not(:last-child) {
   margin-bottom: 22px;
 }
 
 .p {
   text-align: justify;
+}
+
+.code {
+  background-color: variables.$code-background-color;
+  color: variables.$code-text-color;
+  padding: 0 5px;
+  border-radius: 5px;
+  font-size: variables.$font-size-code;
+  vertical-align: middle;
 }
