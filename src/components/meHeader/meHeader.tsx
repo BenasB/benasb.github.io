@@ -22,7 +22,7 @@ const MeHeader: React.FC = () => {
       alt: 'Email Benas Budrys',
     },
     {
-      link: 'https://twitter.com/Majami1233',
+      link: 'https://twitter.com/benasbud',
       src: twitter,
       alt: 'Go to Benas Budrys twitter',
     },
