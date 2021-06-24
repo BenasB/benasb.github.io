@@ -16,3 +16,9 @@
   font-size: variables.$font-size-code;
   vertical-align: middle;
 }
+
+.link,
+link:active,
+link:visited {
+  color: variables.$base-text-color;
+}
