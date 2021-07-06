@@ -4,9 +4,8 @@ import { MDXProvider } from '@mdx-js/react';
 import { LoadedPost } from 'utils/importFiles';
 import PostHeader from 'components/postHeader/postHeader';
 import CodeBlock from 'components/codeBlock/CodeBlock';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 import PostLink from 'components/postLink/PostLink';
+import PostImage from 'components/postImage/postImage';
 
 const MyParagraph = (props: { children: string }) => (
   <p className={style.p} {...props} />
@@ -21,7 +20,7 @@ const MyPre = (props: {
 }) => <CodeBlock {...props.children.props} />;
 
 const MyImage = (props: { alt: string; src: string }) => (
-  <LazyLoadImage {...props} effect="blur" width="100%" />
+  <PostImage {...props} />
 );
 
 const MyLink = (props: { children: string; href: string }) => (
