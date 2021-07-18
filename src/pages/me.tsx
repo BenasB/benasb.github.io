@@ -5,7 +5,13 @@ import MeTextSection from 'components/meTextSection/meTextSection';
 const Me: React.FC = () => {
   return (
     <>
-      <MetaTags data={{ title: 'About me' }} />
+      <MetaTags
+        data={{
+          title: 'About me',
+          description: 'Information about me (Benas Budrys).',
+          og: { url: `${process.env.BASE_URL}me` },
+        }}
+      />
       <MeHeader />
       <MeTextSection title={'Who am I?'}>
         <p>
