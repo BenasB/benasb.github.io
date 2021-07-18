@@ -7,7 +7,7 @@ const Me: React.FC = () => {
     <>
       <MetaTags
         data={{
-          title: 'About me',
+          title: 'About me | Bx2',
           description: 'Information about me (Benas Budrys).',
           og: { url: `${process.env.BASE_URL}me` },
         }}
