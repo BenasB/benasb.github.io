@@ -27,12 +27,31 @@ const MyLink = (props: { children: string; href: string }) => (
   <PostLink className={style.link} {...props} />
 );
 
+const MyOl = (props: { children: string }) => (
+  <p>
+    <ol className={style.list} {...props} />
+  </p>
+);
+
+const MyUl = (props: { children: string }) => (
+  <p>
+    <ul className={style.list} {...props} />
+  </p>
+);
+
+const MyLi = (props: { children: string }) => (
+  <li className={style.li} {...props} />
+);
+
 const styles = {
   p: MyParagraph,
   inlineCode: MyInlineCode,
   pre: MyPre,
   img: MyImage,
   a: MyLink,
+  ol: MyOl,
+  ul: MyUl,
+  li: MyLi,
 };
 
 const Post: React.FC<LoadedPost> = ({ component, metadata }) => {

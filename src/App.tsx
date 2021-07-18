@@ -3,14 +3,17 @@ import './styles/main.scss';
 import Routes from 'routes';
 import Header from 'components/header/header';
 import ContentLayout from 'layouts/contentLayout';
+import ScrollToTop from 'utils/ScrollToTop';
 
 export const App: React.FC = () => {
   return (
     <Router>
-      <Header />
-      <ContentLayout>
-        <Routes />
-      </ContentLayout>
+      <ScrollToTop>
+        <Header />
+        <ContentLayout>
+          <Routes />
+        </ContentLayout>
+      </ScrollToTop>
     </Router>
   );
 };
