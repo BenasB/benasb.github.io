@@ -41,8 +41,6 @@ const MetaTags: React.FC<{ data: PageMetaData }> = ({ data }) => {
     },
   };
 
-  console.log(mergedPageMetaData);
-
   return (
     <Helmet>
       <title>{mergedPageMetaData.title}</title>
