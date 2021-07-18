@@ -9,7 +9,6 @@ const Me: React.FC = () => {
         data={{
           title: 'About me | Bx2',
           description: 'Information about me (Benas Budrys).',
-          og: { url: `${process.env.BASE_URL}me` },
         }}
       />
       <MeHeader />
