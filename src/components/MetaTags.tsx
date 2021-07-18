@@ -19,7 +19,7 @@ const defaultPageMetaData: PageMetaData = {
   title: 'Bx2',
   description:
     'Software, technology and personal blog, portfolio established by Benas Budrys.',
-  og: { image: 'https://bx2.tech/default.png' },
+  og: { image: 'https://bx2.tech/og/default.png' },
 };
 
 const MetaTags: React.FC<{ data: PageMetaData }> = ({ data }) => {
