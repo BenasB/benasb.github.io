@@ -21,7 +21,6 @@ const defaultPageMetaData: PageMetaData = {
     'Software, technology and personal blog, portfolio established by Benas Budrys.',
   og: {
     image: `${process.env.BASE_URL}og/default.png`,
-    url: process.env.BASE_URL,
   },
 };
 
@@ -37,7 +36,7 @@ const MetaTags: React.FC<{ data: PageMetaData }> = ({ data }) => {
         data.description ||
         defaultPageMetaData.description,
       image: data.og?.image || defaultPageMetaData.og?.image,
-      url: data.og?.url || data.canonical || defaultPageMetaData.og?.url,
+      url: data.og?.url || data.canonical,
     },
   };
 
