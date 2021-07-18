@@ -1,9 +1,11 @@
 import MeHeader from 'components/meHeader/meHeader';
+import MetaTags from 'components/MetaTags';
 import MeTextSection from 'components/meTextSection/meTextSection';
 
 const Me: React.FC = () => {
   return (
     <>
+      <MetaTags data={{ title: 'About me' }} />
       <MeHeader />
       <MeTextSection title={'Who am I?'}>
         <p>
