@@ -6,6 +6,7 @@ import PostHeader from 'components/postHeader/postHeader';
 import CodeBlock from 'components/codeBlock/CodeBlock';
 import PostLink from 'components/postLink/PostLink';
 import PostImage from 'components/postImage/postImage';
+import MetaTags from 'components/MetaTags';
 
 const MyParagraph = (props: { children: string }) => (
   <p className={style.p} {...props} />
@@ -57,6 +58,12 @@ const styles = {
 const Post: React.FC<LoadedPost> = ({ component, metadata }) => {
   return (
     <>
+      <MetaTags
+        data={{
+          title: `${metadata.title} | Bx2 Blog`,
+          description: metadata.excerpt,
+        }}
+      />
       <PostHeader {...metadata} />
       <MDXProvider components={styles}>
         <div className={style.content}>{createElement(component)}</div>
