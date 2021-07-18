@@ -31,6 +31,7 @@
     "prismjs": "^1.23.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
     "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
@@ -45,6 +46,7 @@
     "@types/jest": "^26.0.23",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
+    "@types/react-helmet": "^6.1.2",
     "@types/react-lazy-load-image-component": "^1.5.1",
     "@types/react-responsive": "^8.0.2",
     "@types/react-router-dom": "^5.1.7",
@@ -86,7 +88,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test"
     }
   },
   "lint-staged": {
