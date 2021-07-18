@@ -37,5 +37,8 @@ module.exports = {
       filename: '[name].[fullhash].css',
       chunkFilename: '[id].[fullhash].css',
     }),
+    new webpack.DefinePlugin({
+      'process.env.BASE_URL': JSON.stringify('https://bx2.tech/'),
+    }),
   ],
 };
