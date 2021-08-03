@@ -5,7 +5,7 @@ import PostOverview, {
 } from 'components/postOverview/PostOverview';
 import GlobalTopics from 'enums/globalTopics';
 import TopicDropdown from 'components/topicDropdown/TopicDropdown';
-import MetaTags from 'components/MetaTags';
+import MetaTags, { PageMetaData } from 'components/MetaTags';
 import { capitalize } from 'utils/stringManipulation';
 
 interface Props {
@@ -25,15 +25,23 @@ const PostList: React.FC<Props> = ({ postMetaData, topics, selectedTopic }) => {
 
   const shownPosts: PostMetaData[] = getPostsByTopic(selectedTopic);
 
+  const mainPageMetaTags: PageMetaData = {
+    title: `Bx2 Blog`,
+    description: `Blog with various posts about software, hardware, technologies and personal insights, ideas and experiments. Also serving as my (Benas Budrys) portfolio.`,
+  };
+  const categorySpecificMetaTags: PageMetaData = {
+    title: `${capitalize(selectedTopic.title)} | Bx2 Blog`,
+    description: `Bx2 blog posts in '${capitalize(selectedTopic.title)}' topic`,
+  };
+
   return (
     <>
       <MetaTags
-        data={{
-          title: `${capitalize(selectedTopic.title)} | Bx2 Blog`,
-          description: `Bx2 blog posts in '${capitalize(
-            selectedTopic.title
-          )}' topic`,
-        }}
+        data={
+          selectedTopic.title === GlobalTopics.ALL
+            ? mainPageMetaTags
+            : categorySpecificMetaTags
+        }
       />
       <div className={style.container}>
         <>
