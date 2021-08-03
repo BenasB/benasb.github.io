@@ -29,7 +29,12 @@ const CodeBlock: React.FC<{ className: string }> = ({
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={className}
-          style={{ ...style, padding: '20px', borderRadius: '5px' }}
+          style={{
+            ...style,
+            padding: '20px',
+            borderRadius: '5px',
+            overflow: 'scroll',
+          }}
         >
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line, key: i })}>

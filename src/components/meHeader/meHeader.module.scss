@@ -31,16 +31,24 @@
   }
 }
 
-.socials > * {
-  display: inline-block;
+@mixin scaleOnHover($scale) {
   transition-duration: variables.$transition-duration-fast;
   transition-property: transform;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      transform: scale(0.9);
+      transform: scale($scale);
     }
   }
+}
+
+.cvButton {
+  @include scaleOnHover(0.98);
+}
+
+.socials > * {
+  @include scaleOnHover(0.9);
+  display: inline-block;
 
   &:not(:last-child) {
     margin-right: 20px;

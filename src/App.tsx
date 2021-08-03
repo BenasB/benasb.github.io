@@ -1,7 +1,7 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import './styles/main.scss';
 import Routes from 'routes';
-import Header from 'components/header/header';
+import Header from 'components/header/Header';
 import ContentLayout from 'layouts/contentLayout';
 import ScrollToTop from 'utils/ScrollToTop';
 
