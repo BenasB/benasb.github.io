@@ -1,5 +1,5 @@
 import style from './postHeader.module.scss';
-import { PostMetaData } from 'components/postOverview/postOverviewas';
+import { PostMetaData } from 'components/postOverview/PostOverview';
 import { capitalize } from 'utils/stringManipulation';
 import arrow from 'assets/images/vector/left-arrow.svg';
 import { Link } from 'react-router-dom';

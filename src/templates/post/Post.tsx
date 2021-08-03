@@ -2,10 +2,10 @@ import style from './post.module.scss';
 import { createElement } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import { LoadedPost } from 'utils/importFiles';
-import PostHeader from 'components/postHeader/postHeaderis';
+import PostHeader from 'components/postHeader/PostHeader';
 import CodeBlock from 'components/codeBlock/CodeBlock';
 import PostLink from 'components/postLink/PostLink';
-import PostImage from 'components/postImage/postImageas';
+import PostImage from 'components/postImage/PostImage';
 import MetaTags from 'components/MetaTags';
 
 const MyParagraph = (props: { children: string }) => (

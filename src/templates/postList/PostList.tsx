@@ -1,10 +1,10 @@
 import style from './postList.module.scss';
-import TopicList, { TopicData } from 'components/topicList/topicListas';
+import TopicList, { TopicData } from 'components/topicList/TopicList';
 import PostOverview, {
   PostMetaData,
-} from 'components/postOverview/postOverviewas';
+} from 'components/postOverview/PostOverview';
 import GlobalTopics from 'enums/globalTopics';
-import TopicDropdown from 'components/topicDropdown/topicDropdownas';
+import TopicDropdown from 'components/topicDropdown/TopicDropdown';
 import MetaTags, { PageMetaData } from 'components/MetaTags';
 import { capitalize } from 'utils/stringManipulation';
 

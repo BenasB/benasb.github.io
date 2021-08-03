@@ -2,7 +2,7 @@ import { Switch, Route } from 'react-router-dom';
 import { importGenericFiles, importPosts } from 'utils/importFiles';
 import PostList from 'templates/postList/PostList';
 import Post from 'templates/post/Post';
-import { TopicData } from 'components/topicList/topicListas';
+import { TopicData } from 'components/topicList/TopicList';
 import GlobalTopics from 'enums/globalTopics';
 import NotFoundPage from 'pages/404';
 
