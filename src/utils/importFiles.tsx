@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as pathModule } from 'path';
-import { PostMetaData } from 'components/postOverview/PostOverview';
+import { PostMetaData } from 'components/postOverview/postOverviewas';
 import { getUntilFirstDelimiter } from './stringManipulation';
 import GlobalTopics from 'enums/globalTopics';
 

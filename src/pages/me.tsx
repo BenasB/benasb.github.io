@@ -1,6 +1,6 @@
-import MeHeader from 'components/meHeader/MeHeader';
+import MeHeader from 'components/meHeader/meHeaderis';
 import MetaTags from 'components/MetaTags';
-import MeTextSection from 'components/meTextSection/MeTextSection';
+import MeTextSection from 'components/meTextSection/meTextSectionas';
 
 const Me: React.FC = () => {
   return (
