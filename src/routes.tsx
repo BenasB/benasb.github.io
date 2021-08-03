@@ -1,9 +1,10 @@
 import { Switch, Route } from 'react-router-dom';
 import { importGenericFiles, importPosts } from 'utils/importFiles';
-import CategoryPostList from 'templates/categoryPostList';
-import Post from 'templates/post';
-import { TopicData } from 'components/topicList/topicList';
+import PostList from 'templates/postList/PostList';
+import Post from 'templates/post/Post';
+import { TopicData } from 'components/topicList/TopicList';
 import GlobalTopics from 'enums/globalTopics';
+import NotFoundPage from 'pages/404';
 
 const Routes = () => {
   const posts = importPosts(
@@ -17,7 +18,7 @@ const Routes = () => {
     if (!topics.some((t) => t.title === title)) topics.push({ title: title });
   });
 
-  const excludedPages = ['404', 'index', 'post'];
+  const excludedPages = ['404'];
   const pages = importGenericFiles(
     'pages/',
     require.context('pages/', true, /^(?!\.\/).*\.tsx$/)
@@ -48,9 +49,22 @@ const Routes = () => {
           </Route>
         );
       })}
-      <Route path={'/:topic?'}>
-        <CategoryPostList postMetaData={postMetaData} topics={topics} />
-      </Route>
+      {topics.map((topic, key) => {
+        return (
+          <Route
+            exact
+            path={`/${topic.title === GlobalTopics.ALL ? '' : topic.title}`}
+            key={key}
+          >
+            <PostList
+              postMetaData={postMetaData}
+              topics={topics}
+              selectedTopic={topic}
+            />
+          </Route>
+        );
+      })}
+      <Route component={NotFoundPage} />
     </Switch>
   );
 };

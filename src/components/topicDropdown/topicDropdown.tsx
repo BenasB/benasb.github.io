@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import style from './topicDropdown.module.scss';
-import { TopicData } from 'components/topicList/topicList';
+import { TopicData } from 'components/topicList/TopicList';
 import { capitalize } from 'utils/stringManipulation';
 import arrow from 'assets/images/vector/down-arrow.svg';
 import { Link } from 'react-router-dom';

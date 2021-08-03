@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 
-interface PageMetaData {
+export interface PageMetaData {
   title?: string;
   description?: string;
   keywords?: string;

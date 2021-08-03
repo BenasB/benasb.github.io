@@ -71,6 +71,9 @@ const MeHeader: React.FC = () => {
         </div>
         <h3>Location: Lithuania</h3>
         <h3>Age: {age}</h3>
+        <a href={'/benas-budrys-cv.pdf'} className={`${style.cvButton} button`}>
+          Curriculum vitae
+        </a>
       </div>
     </div>
   );

@@ -39,3 +39,29 @@ a {
   font-size: variables.$font-size-paragraph;
   line-height: variables.$line-height-paragraph;
 }
+
+button {
+  @extend .button;
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none;
+
+  color: variables.$base-text-color;
+  font-family: 'Lato', sans-serif;
+  font-weight: variables.$font-weight-bold;
+  font-size: variables.$font-size-heading-small;
+
+  border: 2px solid variables.$base-color;
+  border-radius: 10px;
+  background: transparent;
+  padding: 20px;
+  cursor: pointer;
+  margin: 5px 0;
+
+  &:active,
+  &:focus {
+    color: variables.$base-text-color;
+  }
+}
