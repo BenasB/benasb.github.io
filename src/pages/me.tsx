@@ -8,7 +8,8 @@ const Me: React.FC = () => {
       <MetaTags
         data={{
           title: 'About me | Bx2',
-          description: 'Information about me (Benas Budrys).',
+          description:
+            "I'm a young developer with a passion for computer science, software, hardware and technology in general.",
         }}
       />
       <MeHeader />
