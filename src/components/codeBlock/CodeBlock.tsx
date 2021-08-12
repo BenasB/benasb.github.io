@@ -33,7 +33,7 @@ const CodeBlock: React.FC<{ className: string }> = ({
             ...style,
             padding: '20px',
             borderRadius: '5px',
-            overflow: 'scroll',
+            overflow: 'auto',
           }}
         >
           {tokens.map((line, i) => (
