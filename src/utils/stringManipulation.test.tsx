@@ -69,6 +69,10 @@ describe('isURL function', () => {
   test('https://google.com', () => {
     expect(isURL('https://google.com')).toBe(true);
   });
+
+  test('https://google.com/', () => {
+    expect(isURL('https://google.com/')).toBe(true);
+  });
 });
 
 describe('isDomain function', () => {
