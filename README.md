@@ -6,8 +6,4 @@ This is a personal website used to share my blog posts and info about me and my 
 
 ## Technology
 
-TBD
-
-## What's inside
-
-TBD
+Read about it [here](https://bx2.tech/software/creating-a-blog-from-scratch#tech-stack).
