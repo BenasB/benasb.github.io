@@ -1,0 +1,34 @@
+export const metadata = {
+  title: 'Creating a blog from scratch',
+  date: '2021-08-20',
+  excerpt: '',
+};
+
+## Why
+
+I wanted to have my own blog where I could share my ideas. I didn't find using existing blogging platforms attractive and, since I wanted to learn something new and test my already acquired skills, I decided to write my own, although fairly simple, blog project.
+
+## Tech stack
+
+- [React](https://reactjs.org/) - I had a fair amount of experience with it from my day job as a front end developer so it was an easy choice when starting this project.
+- [Webpack](https://webpack.js.org/) - I didn't have any idea how, when or even why this exists, so I was curious to learn more about the ins and outs of how a project was set up and how it (for example [CRA](https://create-react-app.dev/)) works under the hood. [This](https://www.youtube.com/playlist?list=PLC3y8-rFHvwiWPS2RO3BKotLRfgg_8WEo) tutorial series helped me a lot.
+- [Typescript](https://www.typescriptlang.org/) - I'm decent at C# and C++ and I like OOP, so having types in JavaScript benefited me greatly and allowed me to be more confident and sure about my code.
+- [Sass](https://sass-lang.com/) (with [CSS Modules](https://github.com/css-modules/css-modules)) - I love the functionality that Sass adds, allowing me to write more universal, reusable, although locally scoped, CSS.
+- [Jest](https://jestjs.io/) - Unit testing was always at the back of my mind, but I really didn't have the chance to use it in a real project, so this was a great opportunity to learn something I found interesting and worth to look into.
+- [Mdx](https://mdxjs.com/) - I needed a format to contain the actual blog post data (with formatting, rich text, etc.) and markdown has fairly simple syntax, so this was a good choice for a simple way to store and render my blog posts.
+- [Github pages](https://pages.github.com/) - This blog project is open source and I keep the source code on [github](https://github.com/BenasB/benasb.github.io), so since this is also a free service and you can set it up without a hassle, I decided to go with it as a way to host my build files.
+- [react-snap](https://github.com/stereobooster/react-snap) - Since Github pages hosts static files, I needed a way to generate them. This is a fairly lightweight and simple solution (as opposed to for example [GatsbyJS](https://www.gatsbyjs.com/)).
+
+The actual blog posts are represented by a [directory](https://github.com/BenasB/benasb.github.io/tree/dev/src/assets/blog) containing folders and files. This allows me to not use any [CMS](https://en.wikipedia.org/wiki/Content_management_system) and keep things fairly simple.
+
+This list is, of course, not complete. You can check out the [`package.json`](https://github.com/BenasB/benasb.github.io/blob/dev/package.json) to see all of the other tools and dependencies.
+
+## Difficulties, lessons learned
+
+Most of the project has been pretty straightforward: creating components to display information, links, icons, designing the site for both desktop and mobile versions, basic routing, reusable templates. However, there were some things that were new to me and needed some time to learn about.
+
+### Using webpack's [`require.context`](https://webpack.js.org/guides/dependency-management/#requirecontext)
+
+Manual work is always inferior to automation, especially in the context of software development. I wanted to find a way to somehow automatically/dynamically create react components without needing to manually introduce them to the codebase with `import Component from 'foo/bar'`
+
+## Possible improvements

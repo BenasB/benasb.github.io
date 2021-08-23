@@ -13,14 +13,14 @@
   color: variables.$code-text-color;
   padding: 0 5px;
   border-radius: 5px;
-  font-size: variables.$font-size-code;
+  font-size: smaller;
   vertical-align: middle;
 }
 
-.link,
-link:active,
-link:visited {
+.link {
   color: variables.$base-text-color;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .list {

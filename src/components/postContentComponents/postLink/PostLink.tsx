@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { isDomain } from 'utils/stringManipulation';
+import { isDomain, isURL } from 'utils/stringManipulation';
 
 interface Props {
   href: string;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const PostLink: React.FC<Props> = ({ href, children, className }) => {
-  if (isDomain(href)) {
+  if (isDomain(href) || !isURL(href)) {
     return (
       <Link className={className} to={href.replace(/^.*\/\/[^\/]+/, '')}>
         {children}
