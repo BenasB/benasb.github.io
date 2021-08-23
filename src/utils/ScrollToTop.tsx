@@ -1,21 +1,14 @@
-// https://stackoverflow.com/questions/36904185/react-router-scroll-to-top-on-every-transition
-
-import React, { useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const ScrollToTop: React.FC = ({ children }) => {
-  const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
-    const unlisten = history.listen(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    });
-    return () => {
-      unlisten();
-    };
-  }, [history]);
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
-  return <Fragment>{children}</Fragment>;
+  return <>{children}</>;
 };
 
 export default ScrollToTop;

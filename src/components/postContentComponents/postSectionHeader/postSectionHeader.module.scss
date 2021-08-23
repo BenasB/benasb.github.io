@@ -1,0 +1,31 @@
+@use 'styles/partials/_mixins';
+@use 'styles/partials/_variables';
+
+.container {
+  width: fit-content;
+}
+
+.link {
+  position: relative;
+  text-decoration: none;
+  color: variables.$base-text-color;
+
+  &:hover .icon {
+    opacity: 1;
+  }
+
+  @include mixins.onMobile {
+    &:hover .icon {
+      opacity: 0;
+    }
+  }
+}
+
+.icon {
+  opacity: 0;
+  transition-duration: variables.$transition-duration-fast;
+  position: absolute;
+  left: -32px;
+  width: 24px;
+  height: 24px;
+}

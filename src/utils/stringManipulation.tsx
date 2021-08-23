@@ -13,3 +13,20 @@ export const getUntilFirstDelimiter = (
     ? fallback || ''
     : s.substr(0, s.indexOf(delimiter));
 };
+
+export const isURL = (str: string) => {
+  const expression = new RegExp(
+    // requires http/https protocol
+    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+  );
+
+  return expression.test(str);
+};
+
+export const isDomain = (url: string) => {
+  const pattern = new RegExp(
+    // requires http/https protocol
+    /(https?:\/\/(.+?\.)?bx2\.tech(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/
+  );
+  return pattern.test(url);
+};

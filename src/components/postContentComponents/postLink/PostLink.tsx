@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { isDomain, isURL } from 'utils/stringManipulation';
 
 interface Props {
   href: string;
@@ -7,14 +8,7 @@ interface Props {
 }
 
 const PostLink: React.FC<Props> = ({ href, children, className }) => {
-  const isDomain = (url: string) => {
-    const pattern = new RegExp(
-      /(https?:\/\/(.+?\.)?bx2\.tech(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/
-    );
-    return pattern.test(url);
-  };
-
-  if (isDomain(href)) {
+  if (isDomain(href) || !isURL(href)) {
     return (
       <Link className={className} to={href.replace(/^.*\/\/[^\/]+/, '')}>
         {children}

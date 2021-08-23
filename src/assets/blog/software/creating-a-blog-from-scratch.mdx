@@ -1,0 +1,72 @@
+export const metadata = {
+  title: 'Creating a blog from scratch',
+  date: '2021-08-20',
+  excerpt:
+    'I recently created this blog project from scratch, so I wanted to share some insights about the development process of it, the technology I used and more.',
+};
+
+## Why
+
+I wanted to have my own blog where I could share my ideas. I didn't find using existing blogging platforms attractive and, since I wanted to learn something new and test my already acquired skills, I decided to write my own, although fairly simple, blog project.
+
+## Tech stack
+
+- [React](https://reactjs.org/) - I had a fair amount of experience with it from my day job as a front end developer so it was an easy choice when starting this project.
+- [Webpack](https://webpack.js.org/) - I didn't have any idea how, when or even why this exists, so I was curious to learn more about the ins and outs of how a project was set up and how it (for example [CRA](https://create-react-app.dev/)) works under the hood. [This](https://www.youtube.com/playlist?list=PLC3y8-rFHvwiWPS2RO3BKotLRfgg_8WEo) tutorial series helped me a lot.
+- [Typescript](https://www.typescriptlang.org/) - I'm decent at C# and C++ and I like OOP, so having types in JavaScript benefited me greatly and allowed me to be more confident and sure about my code.
+- [Sass](https://sass-lang.com/) (with [CSS Modules](https://github.com/css-modules/css-modules)) - I love the functionality that Sass adds, allowing me to write more universal, reusable, although locally scoped, CSS.
+- [Jest](https://jestjs.io/) - Unit testing was always at the back of my mind, but I didn't have the chance to use it in a real project, so this was a great opportunity to learn something I found interesting and worth looking into.
+- [Mdx](https://mdxjs.com/) - I needed a format to contain the actual blog post data (with formatting, rich text, etc.) and markdown has fairly simple syntax, so this was a good choice for a simple way to store and render my blog posts.
+- [GitHub Pages](https://pages.github.com/) - This blog project is open source and I keep the source code on [GitHub](https://github.com/BenasB/benasb.github.io), so since this is also a free service and you can set it up without a hassle, I decided to go with it as a way to host my build files.
+- [react-snap](https://github.com/stereobooster/react-snap) - Since GitHub Pages host static files, I needed a way to generate them. This is a fairly lightweight and simple solution (as opposed to for example [GatsbyJS](https://www.gatsbyjs.com/)).
+
+The actual blog posts are represented by a [directory](https://github.com/BenasB/benasb.github.io/tree/dev/src/assets/blog) containing folders and files. This allows me to not use any [CMS](https://en.wikipedia.org/wiki/Content_management_system) and keep things fairly simple.
+
+This list is, of course, not complete. You can check out [`package.json`](https://github.com/BenasB/benasb.github.io/blob/dev/package.json) to see all of the other tools and dependencies.
+
+## Difficulties, lessons learned
+
+Most of the project has been pretty straightforward: creating components to display information, links, icons, designing the site for both desktop and mobile versions, basic routing, reusable templates. However, some things were new to me and needed some time to learn about.
+
+### Using webpack's [`require.context`](https://webpack.js.org/guides/dependency-management/#requirecontext)
+
+Manual work is always inferior to automation, especially in the context of software development. I wanted to find a way to somehow automatically/dynamically create react components without needing to manually import them with `import Component from 'foo/bar'`. When researching this topic, I came across `require.context`. This turned out to be exactly what I needed. Let's take a look at a code snippet.
+
+```Typescript
+const getPages = () => {
+  const context = require.context('pages/', true, /^(?!\.\/).*\.tsx$/);
+
+  context.keys().map((fileUrl) => {
+    const body = context(fileUrl);
+
+    // You can use the 'body' module how you like here
+    // for example use 'body.default' to get the default export
+  });
+
+  // return array of imported components (or anything you like)
+}
+```
+
+This imports all `.tsx` files from `pages/` directory (including subdirectories). You can take the default export of each imported file, store them in an array and return it to use the function where needed.
+
+I did just that for this project when importing pages (`.tsx` files located in `/pages`) and blog post data (`.mdx` files located in `assets/blog`). Although a bit [differently](https://github.com/BenasB/benasb.github.io/blob/dev/src/utils/importFiles.tsx), using generics to make the code more reusable. I also extracted additional data from the file location and name (for example, the file name became the slug/route for the URL).
+
+This allowed me to automatically create routes for both pages and blog posts, which made adding more blog posts or pages easier (you just have to create the file, name it appropriately and write out the component itself).
+
+### GitHub Actions
+
+I have some experience using [Gitlab CI/CD](https://docs.gitlab.com/ee/ci/), but this was my first time using GitHub Actions. I managed to set up the [workflow](https://github.com/BenasB/benasb.github.io/actions) quite painlessly (thanks to the creators of [this action](https://github.com/JamesIves/github-pages-deploy-action)). It does all of the things I need: runs tests, builds the project and deploys it to GitHub Pages.
+
+![GitHub Actions deployment pipeline](raster/github-actions.png)
+
+Like with many other things when you first start, I might not have done things the ideal way, but as far as I'm concerned, it's working flawlessly, although I might need to do more research on GitHub Actions as a whole and check if I'm doing everything correctly the intended way.
+
+## Possible improvements
+
+Here are some things that I believe would be good additions to this project in the future.
+
+- Copy button to the code blocks/snippets.
+- Post sorting, searching and filtering.
+- Dark theme.
+
+You can check the source file of this blog post [here](https://github.com/BenasB/benasb.github.io/blob/dev/src/assets/blog/software/creating-a-blog-from-scratch.mdx) if you're interested.
