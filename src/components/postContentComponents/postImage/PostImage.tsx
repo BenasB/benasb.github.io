@@ -21,7 +21,15 @@ const PostImage: React.FC<Props> = ({ src, alt }) => {
     }
   }
 
-  return <LazyLoadImage src={imageSrc} alt={alt} effect="blur" width="100%" />;
+  return (
+    <LazyLoadImage
+      src={imageSrc}
+      alt={alt}
+      effect="blur"
+      wrapperProps={{ style: { width: '100%' } }}
+      style={{ margin: '0 auto', display: 'block', maxWidth: '100%' }}
+    />
+  );
 };
 
 export default PostImage;

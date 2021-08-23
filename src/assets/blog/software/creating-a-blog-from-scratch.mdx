@@ -1,7 +1,8 @@
 export const metadata = {
   title: 'Creating a blog from scratch',
   date: '2021-08-20',
-  excerpt: '',
+  excerpt:
+    'I recently created this blog project from scratch, so I wanted to share some insights about the development process of it, the technology I used and more.',
 };
 
 ## Why
@@ -16,7 +17,7 @@ I wanted to have my own blog where I could share my ideas. I didn't find using e
 - [Sass](https://sass-lang.com/) (with [CSS Modules](https://github.com/css-modules/css-modules)) - I love the functionality that Sass adds, allowing me to write more universal, reusable, although locally scoped, CSS.
 - [Jest](https://jestjs.io/) - Unit testing was always at the back of my mind, but I really didn't have the chance to use it in a real project, so this was a great opportunity to learn something I found interesting and worth to look into.
 - [Mdx](https://mdxjs.com/) - I needed a format to contain the actual blog post data (with formatting, rich text, etc.) and markdown has fairly simple syntax, so this was a good choice for a simple way to store and render my blog posts.
-- [Github pages](https://pages.github.com/) - This blog project is open source and I keep the source code on [github](https://github.com/BenasB/benasb.github.io), so since this is also a free service and you can set it up without a hassle, I decided to go with it as a way to host my build files.
+- [Github Pages](https://pages.github.com/) - This blog project is open source and I keep the source code on [github](https://github.com/BenasB/benasb.github.io), so since this is also a free service and you can set it up without a hassle, I decided to go with it as a way to host my build files.
 - [react-snap](https://github.com/stereobooster/react-snap) - Since Github pages hosts static files, I needed a way to generate them. This is a fairly lightweight and simple solution (as opposed to for example [GatsbyJS](https://www.gatsbyjs.com/)).
 
 The actual blog posts are represented by a [directory](https://github.com/BenasB/benasb.github.io/tree/dev/src/assets/blog) containing folders and files. This allows me to not use any [CMS](https://en.wikipedia.org/wiki/Content_management_system) and keep things fairly simple.
@@ -29,6 +30,43 @@ Most of the project has been pretty straightforward: creating components to disp
 
 ### Using webpack's [`require.context`](https://webpack.js.org/guides/dependency-management/#requirecontext)
 
-Manual work is always inferior to automation, especially in the context of software development. I wanted to find a way to somehow automatically/dynamically create react components without needing to manually introduce them to the codebase with `import Component from 'foo/bar'`
+Manual work is always inferior to automation, especially in the context of software development. I wanted to find a way to somehow automatically/dynamically create react components without needing to manually import them with `import Component from 'foo/bar'`. When researching about this topic, I came across `require.context`. This turned out to be exactly what I needed. Let's take a look at a code snippet.
+
+```Typescript
+const getPages = () => {
+  const context = require.context('pages/', true, /^(?!\.\/).*\.tsx$/)
+
+  context.keys().map((fileUrl) => {
+    const body = context(fileUrl);
+
+    // You can use the 'body' module how you like here
+    // for example use 'body.default' to get the default export
+  });
+
+  // return array of imported components (or anything you like)
+}
+```
+
+This basically imports all `.tsx` files from `pages/` directory (including subdirectories). You can take the default export of each imported file, store them in an array and return it to use the function where needed.
+
+I did just that for this project when importing pages (`.tsx` files located in `/pages`) and blog post data (`.mdx` files located in `assets/blog`). Although a bit [differently](https://github.com/BenasB/benasb.github.io/blob/dev/src/utils/importFiles.tsx), using generics to make the code more reusable. I also extracted additional data from the file location and name (for example, the file name became the slug/route for the url).
+
+This allowed me to automatically create routes for both pages and blog posts, which made adding more blog posts or pages easier (you just have to create the file, name it appropriately and write out the component itself).
+
+### Github actions
+
+I have some experience using [Gitlab CI/CD](https://docs.gitlab.com/ee/ci/), but this was my first time using Github Actions. I managed to set up the [workflow](https://github.com/BenasB/benasb.github.io/actions) quite painlessly (thanks to the creators of [this action](https://github.com/JamesIves/github-pages-deploy-action)). It does all of the things I need: runs tests, builds the project and deploys it to Github Pages.
+
+![Github actions deployment pipeline](raster/github-actions.png)
+
+Like with many other things when you first start out, I might not have done things the ideal way, but as far as I'm concerned, it's working flawlessly, although I might need to do more research on Github Actions as a whole and check if I'm doing everything correctly in the intended way.
 
 ## Possible improvements
+
+Here are some things that I believe would be good additions to this project in the future.
+
+- Copy button to the code blocks/snippets.
+- Post sorting, searching and filtering.
+- Dark theme.
+
+You can check the source file of this blog post [here](https://github.com/BenasB/benasb.github.io/blob/dev/src/assets/blog/software/creating-a-blog-from-scratch.mdx) if you're interested.
