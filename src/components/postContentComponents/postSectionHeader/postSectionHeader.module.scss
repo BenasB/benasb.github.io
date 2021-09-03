@@ -1,11 +1,9 @@
 @use 'styles/partials/_mixins';
 @use 'styles/partials/_variables';
 
-.container {
-  width: fit-content;
-}
-
 .link {
+  display: block;
+  width: fit-content;
   position: relative;
   text-decoration: none;
   color: variables.$base-text-color;
