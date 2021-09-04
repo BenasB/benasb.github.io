@@ -83,10 +83,12 @@ const Post: React.FC<LoadedPost> = ({ component, metadata }) => {
           description: metadata.excerpt,
         }}
       />
-      <PostHeader {...metadata} />
-      <MDXProvider components={styles}>
-        <div className={style.content}>{createElement(component)}</div>
-      </MDXProvider>
+      <article>
+        <PostHeader {...metadata} />
+        <MDXProvider components={styles}>
+          <div className={style.content}>{createElement(component)}</div>
+        </MDXProvider>
+      </article>
     </>
   );
 };

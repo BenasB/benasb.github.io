@@ -10,17 +10,15 @@ interface Props {
 
 const PostSectionHeader: React.FC<Props> = ({ text, top, children }) => {
   return (
-    <div className={style.container}>
-      <a href={`#${slugifier(text)}`} className={style.link}>
-        <img
-          src={icon}
-          alt={`Go to ${slugifier(text)}`}
-          className={style.icon}
-          style={{ top: top }}
-        />
-        {children}
-      </a>
-    </div>
+    <a href={`#${slugifier(text)}`} className={style.link}>
+      <img
+        src={icon}
+        alt={`Go to ${slugifier(text)}`}
+        className={style.icon}
+        style={{ top: top }}
+      />
+      {children}
+    </a>
   );
 };
 
