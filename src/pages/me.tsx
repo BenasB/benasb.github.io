@@ -54,7 +54,10 @@ const Me: React.FC = () => {
           certainly learned a lot since the start of my professional career and
           I&apos;m glad such a possibility emerged.
         </p>
-        <p>I plan to start studying again in autumn 2021.</p>
+        <p>
+          Currently, I&apos;m working part time and studying Software
+          Engineering (Year 1) at Vilnius University.
+        </p>
       </MeTextSection>
 
       <MeTextSection title={'Why a blog?'}>
