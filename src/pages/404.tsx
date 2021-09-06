@@ -6,7 +6,6 @@ const NotFoundPage: React.FC = () => {
       <MetaTags data={{ title: '404' }} />
 
       <h1>404 Error, sorry!</h1>
-      <h3>TEST text</h3>
     </>
   );
 };
