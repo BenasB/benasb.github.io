@@ -2,11 +2,46 @@ export const metadata = {
   title: 'Unit testing C with Bash',
   date: '2021-09-25',
   excerpt:
-    'I recently created this blog project from scratch, so I wanted to share some insights about the development process of it, the technology I used and more.',
+    "Unit testing brings a lot of good things to your projects. Every developer should understand its value and see that it's really a must, as it helps to automate the testing process, track down bugs, analyse coverage and increase overall productivity.",
 };
+
+Unit testing brings a lot of good things to your projects. Every developer should understand its value and see that it's really a must, as it helps to automate the testing process, track down bugs, analyse coverage and increase overall productivity.
 
 ## Why
 
-## Main problems
+At university, I have a module called Procedural Programming where we are taught (as the module title suggests) basic procedural programming skills with C. As a part of our assessment, we have to write relatively simple programs that usually perform some sort of algorithms (you give data to the program and receive some type of a result from it). Testing those programs manually can be quite time consuming, especially if you want to test specific cases every time you change something. Unit testing was an obvious answer to this problem, so I decided to create a tool to help me achieve just that.
+
+## Main obstacles to overcome
+
+Although it doesn't sound very usual, I chose [Bash](<https://en.wikipedia.org/wiki/Bash_(Unix_shell)>) to solve the issue as it's simple to use and doesn't depend on other tools.
+
+So the main process of manually running a simple C program can be split up into simple steps:
+
+1. Compile the file (I'm using [gcc](https://gcc.gnu.org/) for that)
+2. Run the compiled file
+3. Manually enter input data
+4. Get output from the program
+
+And we do that for each case we want to test. So ideally our tool should do the following:
+
+1. Compile the file
+2. For each case:
+   1. Run the compiled file
+   1. Automatically enter case input data
+   1. Evaluate output from the program
+
+Knowing the needed steps, we can move on to defining the cases. So the question is - what makes up a test case? I came up with these properties:
+
+1. Title
+2. Input data
+3. Expected output data
+
+Of course, there are multiple ways to describe and store test cases. Since the cases for my University exercises should be fairly simple, I chose to store all of the test cases in one `cases.txt` file and separate the properties with empty lines (as an alternative, you could store them in different files or even define the case object with different properties).
 
 ## c-basher
+
+With all of the aforementioned ideas in mind, it was time to develop the actual tool. This is how [c-basher](https://github.com/BenasB/c-basher) was created. In addition to the functionality mentioned above, I also added file and directory validation - for example, if `bin/` directory didn't exist, it would create it automatically and place the compiled file there. Also, you have to provide c-basher with a `.c` file, so logic to check if the provided file exists had to be added.
+
+Another problem with the University exercises I didn't mention earlier is that they usually require you to print user-friendly text to console. For example: "Please enter an integer:". This text must be ignored when evaluating the output from the program (because the output/result is basically everything that the program prints out). This led me to create a separate `ignore.txt` file that the user can populate with strings that should be ignored when evaluating the output.
+
+Read more about the tool in the [readme file](https://github.com/BenasB/c-basher/blob/main/README.md). Feel free to use it for your needs.
