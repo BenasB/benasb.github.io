@@ -1,0 +1,46 @@
+export const metadata = {
+  title: 'Springaroo',
+  date: '2021-10-17',
+  excerpt:
+    'A challenging 2D platformer for mobile devices where the player needs to jump and avoid obstacles to complete levels.',
+};
+
+## Idea
+
+Initially created in 2020, this project is a 2D mobile platformer game where the player has to reach a chest of gold to complete each level. The player faces obstacles and the difficulty increases progressively with each level. A lot of inspiration was drawn from [Jump King](https://store.steampowered.com/app/1061090/Jump_King/), but unlike Jump King, this game focused more on smaller action paced levels/challanges.
+
+## Mechanics
+
+### Movement
+
+The main mechanic of this game is jumping and it's the only way to move around the level. Since this is a mobile game, I wanted the controls to be simple, because convoluted controls often frustrate the player and hinder their ability to move the player in the way they want to. Keeping those things in mind, I decided to implement one finger controls. The movement itself is similar to [Angry Birds'](https://en.wikipedia.org/wiki/Angry_Birds_(video_game)#Gameplay) slingshot mechanic – you launch the player in a chosen direction with a certain force and if the player hits the wall, his velocity on the x axis gets reverse (essentially "bouncing" off the wall). Here is the first gif that I recorded from this project:
+
+![First Springaroo gif](gif/SpringarooFirstGif.gif)
+
+### End goal
+
+Once I implemented the movement, I had to decide what the end goal will be and it's behaviour. A chest of gold was chosen for that purpose and maybe it's too simple, but it's an end goal nonetheless. The interesting mechanic of the end goal is that you need to be standing on the ground (not moving) to actually complete the level – you can't fling yourself at the gold chest and just "touch" it. Oh, and I also added colors to the arrow that appears when the player is aiming to indicate the launch force. Here's a gif of almost reaching the end goal of a level:
+
+![Springaroo Level 4](gif/SpringarooLevel4.gif)
+
+### Obstacles
+
+To make the game more difficult, I added various obstacles that kill the player. There are no lives or health, you just get reset to the start of the level. A list of the obstacles I implemented:
+
+* Axes - an axe spinning around a pivot on the knob (the end of an axe). This essentially creates a circle, where the player dies if he touches the circumference of it (the head of the axe).
+* Saws - a saw moving back and forth (or looping) through a predefined path.
+* Flamethrowers - a flamethrower which shoots flames for a predefined amount of time and then has a cooldown timer.
+
+Here's a level with all of the obstacles:
+
+![Springaroo Level 17](gif/SpringarooLevel17.gif)
+
+### UI
+
+This game also needed UI – a menu, level selection, panel when you complete a level, etc. I wanted the UI to feel more "alive" and "juicy", so I decided to add animations that would liven up the UI elements. I added transitions between panels, animations on buttons and logos and more. Here's the end result:
+
+![Springaroo UI](gif/SpringarooUI.gif)
+
+## Conclusion
+
+Although I didn't release this game publicly (there were only 20 levels, needed more content, obstacles), I still see this project as a great learning experience that was fun and interesting at the same time. When creating this project, I already had a lot of experience with Unity (the game engine I used to create this game), but it was exciting to put my skills to the test. Maybe I'll come back to this project sometime and properly finish it.
