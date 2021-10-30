@@ -18,9 +18,6 @@ const generateOgImages = async () => {
   );
   const extension = '.mdx';
 
-  const templateBuffer = await fs.readFile(templatePath);
-  const template = templateBuffer.toString();
-
   // Get blog file paths
   glob(blogDirectory + '/**/*' + extension, {}, async (err, blogFilePaths) => {
     if (err) {
@@ -49,12 +46,15 @@ const generateOgImages = async () => {
 
     await fs.mkdir(destinationDirectory, { recursive: true });
 
-    nodeHtmlToImage({
+    const templateBuffer = await fs.readFile(templatePath);
+    const template = templateBuffer.toString();
+
+    await nodeHtmlToImage({
       html: template,
       content,
-    })
-      .then(() => console.log(`✔️ OG images created successfully`))
-      .catch(() => console.log(`❌ Failed to create OG images`));
+    });
+
+    console.log(`✔️  OG images created successfully`);
   });
 };
 
