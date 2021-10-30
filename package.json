@@ -13,7 +13,8 @@
     "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "serve": "serve ./build",
     "test": "jest",
-    "generate-og-images": "ts-node --project node.tsconfig.json src/utils/generateOgImages.ts"
+    "generate-og-images": "ts-node --project node.tsconfig.json src/utils/generateOgImages.ts",
+    "lint-staged": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -70,7 +71,7 @@
     "extract-mdx-metadata": "^2.0.0",
     "glob": "^7.2.0",
     "html-webpack-plugin": "^5.3.1",
-    "husky": "4",
+    "husky": "^7.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
     "mini-css-extract-plugin": "^1.4.0",
@@ -90,12 +91,6 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "yarn test"
-    }
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json}": [
