@@ -1,0 +1,46 @@
+export const meta = {
+  title: 'Automatically generating Open Graph images',
+  date: '2021-10-30',
+  excerpt:
+    'From now on, all Open Graph images for my blog posts are automatically generated, so let me elaborate on how I managed to achieve this.',
+};
+
+## Motivation
+
+Not so long ago GitHub [updated their platform](https://github.blog/2021-06-22-framework-building-open-graph-images/) and made the default Open Graph images for repositories, pull requests, etc. fully automatic. If I'm not mistaken, those pictures are generated on the fly upon a request to a certain route and with some optimizations they managed to reach very impressive performance. Their blog post goes more in-depth about the technical implementation, so make sure to check it out if you're interested. Motivated by this idea, I decided to implement something similar for my blog project, since a default Open Graph image is not very creative.
+
+## Goals
+
+My goal was also to automatically generate Open Graph images, however, unlike Github, I didn't need to generate images on the fly and could perform the generation when the blog posts changed. Additionally, I didn't aim for the best performance, because it was a fun learning process and I wanted to make something functional (not get rooted in micro-optimization), so you may see some places that can be optimized.
+
+## Implementation
+
+Like I mentioned in [one of my older posts](/software/creating-a-blog-from-scratch), the blog posts in this project are represented by `mdx` files in the `src/assets/blog` [directory](https://github.com/BenasB/benasb.github.io/tree/dev/src/assets/blog). Keeping this in mind we can separate the generation process into these steps:
+
+1. Read an `mdx` file from the `src/assets/blog` directory.
+2. Extract the `meta` object from the file.
+3. Put needed data from the `meta` object to a template.
+4. Take a screenshot of that template and save it to a file.
+
+Step 1 is pretty simple and can be handled with [`fs`](https://nodejs.org/api/fs.html) and [`glob`](https://www.npmjs.com/package/glob). However, this took some time, because I had to get used to asynchronous programming and the various ways it can be achieved (callbacks, promises, async/await).
+
+Step 2 is handled by [`extract-mdx-metadata`](https://www.npmjs.com/package/extract-mdx-metadata). Although it doesn't have TypeScript support, I managed to adapt it to my needs. It's good that I chose to use `mdx` files from the start because there are ways to [transform](https://mdxjs.com/advanced/transform-content/) the content and people have already created packages that help you. It's also a good time to mention that almost the same steps 1 and 2 are done using [`importFiles`](https://github.com/BenasB/benasb.github.io/blob/dev/src/utils/importFiles.tsx) function when building the front end, however I can't reuse it here, because it depends on webpack and needs to be bundled/processed.
+
+For step 3 I use a [handlebars](https://handlebarsjs.com/) template which is basically HTML with variables. I'm pretty sure it has quite a few features, however I just needed to take in an object and display some of its properties in certain HTML tags, so it's a great simple syntax solution. You can check out the template file [here](https://github.com/BenasB/benasb.github.io/blob/dev/src/templates/og.hbs). I chose to add the title and release date to the template.
+
+Step 4 is performed by [`node-html-to-image`](https://www.npmjs.com/package/node-html-to-image). This is a great package as it consumes the handlebars template and takes a screenshot of it using [puppeteer](https://developers.google.com/web/tools/puppeteer) under the hood. Probably performance suffers here the most due to the fact that puppeteer needs
+a lot of resources to function.
+
+Here's an example Open Graph image for the previously mentioned [blog post](/software/creating-a-blog-from-scratch):
+
+![Example OG image](raster/og-example.png)
+
+## Running the generation
+
+With the generation process in place, I had to decide when to perform it, because doing it manually is not very productive. I could run the generation every time I commit or push my changes to git by utilizing [husky](https://typicode.github.io/husky/#/), however I took it a step further and made it so that the Open Graph images are generated during the `pre-commit` phase if **there are changes** to the `src/assets/blog` directory where all of the blog post files are located.
+
+## Improvements for the future
+
+In theory, you could generate the images only for the files that changed (not the whole directory), but I'll probably leave that for the future. I'm also not fully sure about the template design, but I think I'll figure it out and find a better visual design as time goes.
+
+You can check out the generation source code [here](https://github.com/BenasB/benasb.github.io/blob/dev/src/utils/generateOgImages.ts).
