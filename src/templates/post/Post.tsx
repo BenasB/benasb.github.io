@@ -53,7 +53,6 @@ const MyH2 = (props: { children: string }) => (
 );
 
 const MyH3 = (props: { children: string }) => {
-  console.log(props.children);
   return (
     <PostSectionHeader text={props.children} top={2}>
       <h3 id={slugifier(props.children)}>{props.children}</h3>
@@ -81,6 +80,9 @@ const Post: React.FC<LoadedPost> = ({ component, metadata }) => {
         data={{
           title: `${metadata.title} | Bx2 Blog`,
           description: metadata.excerpt,
+          og: {
+            image: `${process.env.BASE_URL}og/blog/${metadata.fileName}.png`,
+          },
         }}
       />
       <article>

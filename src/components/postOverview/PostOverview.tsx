@@ -7,6 +7,7 @@ export interface PostMetaData {
   excerpt: string;
   path: string;
   topic: string;
+  fileName: string;
 }
 
 const PostOverview: React.FC<PostMetaData> = ({
