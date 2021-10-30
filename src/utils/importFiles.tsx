@@ -6,6 +6,7 @@ import GlobalTopics from 'enums/globalTopics';
 
 export interface LoadedComponent {
   relativeFilePathWithoutExtension: string;
+  fileName: string;
   component: React.ComponentType;
 }
 
@@ -19,13 +20,17 @@ const getGenericData = (
   body: any
 ): LoadedComponent => {
   const component: React.ComponentType = body.default;
+  const fileName: string = pathModule.parse(fileUrl).name;
   const relativeFilePathWithoutExtension: string =
-    pathModule.parse(fileUrl).dir === path
-      ? pathModule.parse(fileUrl).name
-      : pathModule.parse(fileUrl).dir.concat('/').replace(path, '') +
-        pathModule.parse(fileUrl).name;
+    pathModule.parse(fileUrl).dir + '/' === path
+      ? fileName
+      : pathModule.join(
+          pathModule.parse(fileUrl).dir.replace(path, ''),
+          pathModule.parse(fileUrl).name
+        );
 
   return {
+    fileName,
     relativeFilePathWithoutExtension,
     component,
   };
@@ -48,13 +53,14 @@ export const importPosts = (
     body: any
   ): LoadedPost => {
     const genericData = getGenericData(path, fileUrl, body);
-    const metaData = body.metadata;
+    const metaData = body.meta;
     metaData.date = new Date(metaData.date);
 
     return {
       ...genericData,
       metadata: {
         ...metaData,
+        fileName: genericData.fileName,
         path: genericData.relativeFilePathWithoutExtension,
         topic: getUntilFirstDelimiter(
           genericData.relativeFilePathWithoutExtension,

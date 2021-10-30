@@ -1,4 +1,4 @@
-export const metadata = {
+export const meta = {
   title: 'Springaroo',
   date: '2021-10-17',
   excerpt:
@@ -13,7 +13,7 @@ Initially created in 2020, this project is a 2D mobile platformer game where the
 
 ### Movement
 
-The main mechanic of this game is jumping and it's the only way to move around the level. Since this is a mobile game, I wanted the controls to be simple, because convoluted controls often frustrate the player and hinder their ability to move the player in the way they want to. Keeping those things in mind, I decided to implement one finger controls. The movement itself is similar to [Angry Birds'](https://en.wikipedia.org/wiki/Angry_Birds_(video_game)#Gameplay) slingshot mechanic – you launch the player in a chosen direction with a certain force and if the player hits a wall, his velocity on the x axis gets reversed (essentially "bouncing" off the wall). Here is the first gif that I recorded from this project:
+The main mechanic of this game is jumping and it's the only way to move around the level. Since this is a mobile game, I wanted the controls to be simple, because convoluted controls often frustrate the player and hinder their ability to move the player in the way they want to. Keeping those things in mind, I decided to implement one finger controls. The movement itself is similar to [Angry Birds'](<https://en.wikipedia.org/wiki/Angry_Birds_(video_game)#Gameplay>) slingshot mechanic – you launch the player in a chosen direction with a certain force and if the player hits a wall, his velocity on the x axis gets reversed (essentially "bouncing" off the wall). Here is the first gif that I recorded from this project:
 
 ![First Springaroo gif](gif/SpringarooFirstGif.gif)
 
@@ -27,9 +27,9 @@ Once I implemented the movement, I had to decide what the end goal will be and i
 
 To make the game more difficult, I added various obstacles that kill the player. There are no lives or health, you just get reset to the start of the level. A list of the obstacles I implemented:
 
-* Axes - an axe spinning around a pivot on the knob (the end of an axe). This essentially creates a circle, where the player dies if he touches the circumference of it (the head of the axe).
-* Saws - a saw moving back and forth (or looping) through a predefined path.
-* Flamethrowers - a flamethrower which shoots flames for a predefined amount of time and then has a cooldown timer.
+- Axes - an axe spinning around a pivot on the knob (the end of an axe). This essentially creates a circle, where the player dies if he touches the circumference of it (the head of the axe).
+- Saws - a saw moving back and forth (or looping) through a predefined path.
+- Flamethrowers - a flamethrower which shoots flames for a predefined amount of time and then has a cooldown timer.
 
 Here's a level with all of the obstacles:
 
