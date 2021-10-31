@@ -31,15 +31,11 @@ const MyLink = (props: { children: string; href: string }) => (
 );
 
 const MyOl = (props: { children: string }) => (
-  <p>
-    <ol className={style.list} {...props} />
-  </p>
+  <ol className={style.list} {...props} />
 );
 
 const MyUl = (props: { children: string }) => (
-  <p>
-    <ul className={style.list} {...props} />
-  </p>
+  <ul className={style.list} {...props} />
 );
 
 const MyLi = (props: { children: string }) => (
