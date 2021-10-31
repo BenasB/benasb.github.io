@@ -24,6 +24,9 @@
 }
 
 .list {
+  @extend .p;
+  font-size: variables.$font-size-paragraph;
+  line-height: variables.$line-height-paragraph;
   padding-left: 30px;
 }
 
