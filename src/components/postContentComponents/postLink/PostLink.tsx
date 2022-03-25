@@ -8,7 +8,8 @@ interface Props {
 }
 
 const PostLink: React.FC<Props> = ({ href, children, className }) => {
-  if (isDomain(href) || !isURL(href)) {
+  const exceptions: string[] = ['https://bx2.tech/vu-lff/'];
+  if ((isDomain(href) || !isURL(href)) && !exceptions.includes(href)) {
     return (
       <Link className={className} to={href.replace(/^.*\/\/[^\/]+/, '')}>
         {children}
