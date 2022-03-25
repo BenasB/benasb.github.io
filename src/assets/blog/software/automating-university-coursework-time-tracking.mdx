@@ -1,0 +1,56 @@
+export const meta = {
+  title: 'Automating university coursework time tracking',
+  date: '2022-03-25',
+  excerpt:
+    "Sometimes time tracking your university coursework gives you a lot of hassle, here's how I automated it",
+};
+
+## Motivation
+
+For some modules at Vilnius University, we are required to fill in a time tracking form (_Laiko Fiksavimo Forma_ in Lithuanian, abbreviated _LFF_) when doing the coursework. The form covers some of the basic tracking parameters where each row in the form represents a time period when you worked on the crousework:
+
+- Date
+- Starting time
+- Finishing time
+- Disturbances
+- Total time (= _Finishing time - Starting time - Disturbances_)
+- Activity name
+- Comments
+
+![The original LFF](raster/lff-original.png)
+
+While the idea of this form is pretty straightforward I found it hard filling it in the way it was meant to be filled in - after working a certain period of time, you are supposed to add an entry to the form. I noticed that I usually filled in all of the form after completing the whole coursework and it took quite some time.
+
+## Goal
+
+My goal was to ease the process of filling in the LFF since I found it cumbersome doing it manually. I decided to automate by utilizing **git**. It was an easy decision since I (and a lot of other students) keep the crousework on [GitHub](https://github.com/BenasB?tab=repositories) and I'm already doing incremental changes/updates to code - why not make use of the commit history?
+
+![Bx2 tech vu lff](raster/vu-lff.png)
+
+## Implementation
+
+A nice thing with this approach is that we already add some data automatically when commiting changes. As an example, the commit has a timestamp which we can interpret as data for the LFF. In a lot of cases, you also start working on the next feature of the coursework after finishing the previous one - we can take the time interval between the current and previous commits. In the commit messages, you specify the activity, comments, etc. and the app will try its best to generate an LFF for you.
+
+Here are some examples of LFF commit messages:
+
+```bash
+git commit -m "LFF: Documentation" -m "Started writing documentation for new feature"
+
+git commit -m "LFF: Programming" -m "Added feature X <START=13:06>"
+
+git commit -m "LFF: Programming" -m "Refactored UI dropdown component <DISTURBANCE=00:23;Lunch>"
+
+git commit -m "LFF: Planning" -m "Created class hierarchy <START=2022-03-20;16:32><DISTURBANCE=00:18;Taking out trash><DISTURBANCE=00:07;Phone call>"
+```
+
+You can find all of the syntax rules in the _Frequently Asked Questions_ section of the [project page](https://bx2.tech/vu-lff)
+
+An example of a generated LFF:
+
+![Generated lff](raster/generated-lff.png)
+
+## Improvements for the future
+
+I don't have a lot in mind for the future of this project. However, it would be nice to add more exporting options such as _Export to CSV_. I'm open to suggestions and contributions. Maybe someone will want to improve this since this is an open source project. Feel free to head over to this project's [repository](https://github.com/BenasB/vu-lff).
+
+You can check out the project page [here](https://bx2.tech/vu-lff).
