@@ -35,28 +35,12 @@ const Me: React.FC = () => {
           honed my hardware skills working on projects with the help of an
           Arduino or a Raspberry Pi.
         </p>
-        <p>
-          My personal goal while coding is to write readable, easily
-          maintainable, universal and reusable code. Although sometimes hard to
-          achieve, I find that this mentality allows me to grow and learn as a
-          developer and an individual the most.
-        </p>
       </MeTextSection>
 
       <MeTextSection title={'What am I up to now?'}>
         <p>
-          After dropping out of university in 2020, I took an amazing
-          opportunity to work for a Lithuanian fintech company as a front end
-          developer. Although I did not have a lot of experience working with
-          front end technologies at the start, I managed to learn quickly and
-          adapt to my new requirements. My day-to-day tasks make use of
-          technologies such as React, Typescript, Node.js, Gatsby and others. I
-          certainly learned a lot since the start of my professional career and
-          I&apos;m glad such a possibility emerged.
-        </p>
-        <p>
           Currently, I&apos;m working part time and studying Software
-          Engineering (Year 1) at Vilnius University.
+          Engineering at Vilnius University.
         </p>
       </MeTextSection>
 
