@@ -35,7 +35,8 @@ const TopicDropdown: React.FC<Props> = ({ topics, selectedTopic }) => {
           height={15}
           className={classNames(
             { [style.rotate180]: dropdownOpen },
-            { [style.rotate0]: !dropdownOpen }
+            { [style.rotate0]: !dropdownOpen },
+            style.arrow
           )}
         />
       </button>

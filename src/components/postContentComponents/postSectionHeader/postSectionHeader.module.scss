@@ -6,7 +6,9 @@
   width: fit-content;
   position: relative;
   text-decoration: none;
-  color: variables.$base-text-color;
+  @include mixins.themed(){
+    color: mixins.t("base-text-color");
+  }
 
   &:hover .icon {
     opacity: 1;
@@ -26,4 +28,8 @@
   left: -32px;
   width: 24px;
   height: 24px;
+
+  @include mixins.themed(){
+    filter: mixins.t("base-filter");
+  }
 }

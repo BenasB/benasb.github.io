@@ -1,13 +1,13 @@
 @use 'styles/partials/_mixins';
 
 .wrapper {
-  margin: 65px auto;
+  margin: 0 auto;
 
   max-width: 1000px;
-  padding: 0 40px;
+  padding: 65px 40px;
 
   @include mixins.onMobile {
-    margin: 25px auto;
-    padding: 0 15px;
+    margin: 0 auto;
+    padding: 25px 15px;
   }
 }
