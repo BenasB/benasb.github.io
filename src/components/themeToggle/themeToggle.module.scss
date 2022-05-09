@@ -1,0 +1,19 @@
+@use 'styles/partials/_mixins';
+@use 'styles/partials/_variables';
+
+.button{
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+}
+
+.image {
+  height: 30px;
+  vertical-align: middle;
+  @include mixins.themed() {
+    filter: mixins.t("inverse-filter");
+  }
+}

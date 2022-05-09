@@ -5,10 +5,11 @@ import Routes from 'routes';
 import Header from 'components/header/Header';
 import ContentLayout from 'layouts/contentLayout';
 import ScrollToTop from 'utils/ScrollToTop';
+import ThemeProvider from 'components/ThemeProvider';
 
 export const App: React.FC = () => {
   return (
-    <div className='theme--light'>
+    <ThemeProvider>
       <div className={style.app}>
         <Router>
           <ScrollToTop>
@@ -19,6 +20,6 @@ export const App: React.FC = () => {
           </ScrollToTop>
         </Router>
       </div>
-    </div>
+    </ThemeProvider>
   );
 };

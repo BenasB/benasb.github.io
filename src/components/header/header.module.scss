@@ -32,6 +32,9 @@
 }
 
 .navigation {
+  display: flex;
+  align-items: center;
+
   a {
     display: inline-block;
     text-align: center;
@@ -43,12 +46,13 @@
     font-size: variables.$font-size-heading-medium;
     font-weight: 700;
 
-    &:first-child {
-      margin-right: 60px;
+  }
+  
+  & > *:not(:last-child) {
+    margin-right: 40px;
 
-      @include mixins.onMobile {
-        margin-right: 10vw;
-      }
+    @include mixins.onMobile {
+      margin-right: 10vw;
     }
   }
 
