@@ -8,6 +8,7 @@ body {
   font-family: 'Lato', sans-serif;
   color: variables.$base-text-color;
   font-size: 100%;
+  background-color: variables.$base-background-color;
 
   & * {
     box-sizing: border-box;
