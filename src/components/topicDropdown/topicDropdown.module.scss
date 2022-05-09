@@ -1,11 +1,14 @@
 @use 'styles/partials/_variables';
+@use 'styles/partials/_mixins';
 
 .container {
-  background-color: variables.$inverse-text-color;
+  @include mixins.themed(){
+    background-color: mixins.t("base-background-color");
+    border-bottom: 2px solid mixins.t("inactive-color");
+  }
   position: sticky;
   top: 0;
   padding: 15px 10px;
-  border-bottom: 2px solid variables.$inactive-color;
 }
 
 .button {
@@ -17,6 +20,10 @@
   width: 100%;
   border: 0;
   background-color: transparent;
+
+  @include mixins.themed(){
+    color: mixins.t("base-text-color");
+  }
 }
 
 .rotate180 {
@@ -31,13 +38,22 @@
   transform: rotateZ(0deg);
 }
 
+.arrow {
+  @include mixins.themed(){
+    filter: mixins.t("base-filter");
+  }
+}
+
 .links {
   margin-top: 10px;
 }
 
 .link {
   text-decoration: none;
-  color: variables.$base-text-color;
+
+  @include mixins.themed(){
+    color: mixins.t("base-text-color");
+  }
 
   h3 {
     line-height: 30px;

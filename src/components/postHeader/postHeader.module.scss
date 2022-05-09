@@ -3,12 +3,20 @@
 
 .topic {
   text-decoration: none;
-  color: variables.$base-text-color;
+  @include mixins.themed(){
+    color: mixins.t("base-text-color");
+  }
 
   * {
     display: inline;
     vertical-align: middle;
     margin-right: 5px;
+  }
+
+  img {
+    @include mixins.themed(){
+      filter: mixins.t("base-filter");
+    }
   }
 }
 
@@ -19,7 +27,9 @@
 }
 
 .date {
-  color: variables.$inactive-color;
+  @include mixins.themed(){
+    color: mixins.t("inactive-color");
+  }
 }
 
 .header {

@@ -2,11 +2,19 @@
 @use 'styles/partials/_mixins';
 
 .container {
-  background-color: variables.$base-color;
+  @include mixins.themed(){
+    background-color: mixins.t("base-color");
+  }
   padding: 60px 0;
 
   @include mixins.onMobile {
     padding: 50px 0;
+  }
+
+  img {
+    @include mixins.themed(){
+      filter: mixins.t("inverse-filter");
+    }
   }
 }
 
@@ -29,7 +37,9 @@
     text-align: center;
     min-width: 75px;
     text-decoration: none;
-    color: variables.$inverse-text-color;
+    @include mixins.themed(){
+      color: mixins.t("inverse-text-color");
+    }
     font-size: variables.$font-size-heading-medium;
     font-weight: 700;
 

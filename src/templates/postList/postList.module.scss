@@ -44,7 +44,9 @@
   width: 5px;
   height: 100%;
   border-radius: 20px;
-  background-color: variables.$inactive-color;
+  @include mixins.themed(){
+    background-color: mixins.t("inactive-color");
+  }
   position: absolute;
   right: 0;
   top: 0;

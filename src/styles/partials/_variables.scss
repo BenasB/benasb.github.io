@@ -1,10 +1,8 @@
-$base-color: #222222;
+$light-black: #222222;
 $inactive-color: #949494;
-$base-text-color: #222222;
-$inverse-text-color: #fafafa;
-$code-background-color: #1e1e1e;
-$code-text-color: white;
-$base-background-color: #fafafa;
+$light-white: #f0f0f0;
+$code-black: #1e1e1e;
+$code-white: white;
 
 $font-size-heading-large: 64px;
 $font-size-heading-medium: 36px;
@@ -24,3 +22,6 @@ $breakpoint-mobile: 576px;
 
 $transition-duration-regular: 0.25s;
 $transition-duration-fast: 0.1s;
+
+$dark-filter: brightness(0) saturate(100%) invert(12%) sepia(0%) saturate(0%) hue-rotate(78deg) brightness(99%) contrast(97%);
+$light-filter: brightness(0) saturate(100%) invert(96%) sepia(0%) saturate(7485%) hue-rotate(213deg) brightness(112%) contrast(96%);

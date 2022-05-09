@@ -1,10 +1,13 @@
 @use 'styles/partials/_variables';
+@use 'styles/partials/_mixins';
 
 $slideWidth: 15px;
 
 .listItem {
   display: block;
-  color: variables.$inactive-color;
+  @include mixins.themed(){
+    color: mixins.t("inactive-color");
+  }
   transition-duration: variables.$transition-duration-regular;
   transition-property: padding;
   padding-left: $slideWidth;
@@ -30,7 +33,9 @@ $slideWidth: 15px;
 }
 
 .active {
-  color: variables.$base-text-color;
+  @include mixins.themed(){
+    color: mixins.t("base-text-color");
+  }
   padding-right: $slideWidth;
   padding-left: 0;
 

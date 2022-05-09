@@ -1,0 +1,9 @@
+@use 'styles/partials/_mixins';
+
+.app {
+    min-height: 100vh;
+    @include mixins.themed(){
+      background-color: mixins.t("base-background-color");
+      color: mixins.t("base-text-color");
+    }
+  }
