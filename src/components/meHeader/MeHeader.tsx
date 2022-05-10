@@ -37,12 +37,7 @@ const MeHeader: React.FC = () => {
       alt: 'Go to Benas Budrys Github',
     },
   ];
-
-  const age = Math.abs(
-    new Date(Date.now() - new Date('2001-04-18').getTime()).getUTCFullYear() -
-      1970
-  );
-
+  
   return (
     <div className={style.container}>
       <LazyLoadImage
@@ -70,10 +65,6 @@ const MeHeader: React.FC = () => {
           })}
         </div>
         <h3>Location: Lithuania</h3>
-        <h3>Age: {age}</h3>
-        <a href={'/benas-budrys-cv.pdf'} className={style.cvButton}>
-          Curriculum vitae
-        </a>
       </div>
     </div>
   );
