@@ -92,23 +92,23 @@ describe('isDomain function', () => {
     expect(isDomain('https://google.com')).toBe(false);
   });
 
-  test('www.bx2.tech', () => {
-    expect(isDomain('www.bx2.tech')).toBe(false);
+  test('www.benasb.github.io', () => {
+    expect(isDomain('www.benasb.github.io')).toBe(false);
   });
 
-  test('http://bx2.tech', () => {
-    expect(isDomain('http://bx2.tech')).toBe(true);
+  test('http://benasb.github.io', () => {
+    expect(isDomain('http://benasb.github.io')).toBe(true);
   });
 
-  test('https://bx2.tech', () => {
-    expect(isDomain('https://bx2.tech')).toBe(true);
+  test('https://benasb.github.io', () => {
+    expect(isDomain('https://benasb.github.io')).toBe(true);
   });
 
-  test('https://bx2.tech/some', () => {
-    expect(isDomain('https://bx2.tech/some')).toBe(true);
+  test('https://benasb.github.io/some', () => {
+    expect(isDomain('https://benasb.github.io/some')).toBe(true);
   });
 
-  test('https://bx2.tech/foo/bar.png', () => {
-    expect(isDomain('https://bx2.tech/foo/bar.png')).toBe(true);
+  test('https://benasb.github.io/foo/bar.png', () => {
+    expect(isDomain('https://benasb.github.io/foo/bar.png')).toBe(true);
   });
 });
