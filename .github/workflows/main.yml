@@ -83,3 +83,48 @@ jobs:
           platforms: linux/arm/v7
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/blog:latest
+
+  deploy-rpi:
+    name: Deploy to pi
+    needs: build-docker
+    runs-on: ubuntu-latest
+    environment:
+      name: pi
+      url: http://benaspi.ddns.net:8005
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Copy stack file 📁
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.RPI_HOST }}
+          username: ${{ secrets.RPI_USERNAME }}
+          password: ${{ secrets.RPI_PASSWORD }}
+          source: 'Infrastructure/rpi-stack.yml'
+          target: '~/stacks/blog/'
+          strip_components: 1
+
+      - name: Compose pull ⬇️
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.RPI_HOST }}
+          username: ${{ secrets.RPI_USERNAME }}
+          password: ${{ secrets.RPI_PASSWORD }}
+          script: docker-compose -f ~/stacks/blog/rpi-stack.yml pull
+
+      - name: Compose up 🚀
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.RPI_HOST }}
+          username: ${{ secrets.RPI_USERNAME }}
+          password: ${{ secrets.RPI_PASSWORD }}
+          script: docker-compose -f ~/stacks/blog/rpi-stack.yml up -d
+
+      - name: Check running containers 🔍
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.RPI_HOST }}
+          username: ${{ secrets.RPI_USERNAME }}
+          password: ${{ secrets.RPI_PASSWORD }}
+          script: docker ps -a
