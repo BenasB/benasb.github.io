@@ -38,6 +38,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
+          path: build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.1
@@ -54,6 +55,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
+          path: build
 
       - name: Set up QEMU 🔨
         uses: docker/setup-qemu-action@v1
