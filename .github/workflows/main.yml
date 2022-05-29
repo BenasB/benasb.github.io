@@ -34,6 +34,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
@@ -51,6 +54,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
