@@ -6,4 +6,4 @@ This is a personal website used to share my blog posts and info about me and my 
 
 ## Technology
 
-Read about it [here](https://bx2.tech/software/creating-a-blog-from-scratch#tech-stack).
+Read about it [here](https://benasb.github.io/software/creating-a-blog-from-scratch#tech-stack).
