@@ -39,7 +39,7 @@ module.exports = {
       chunkFilename: '[id].[fullhash].css',
     }),
     new webpack.DefinePlugin({
-      'process.env.BASE_URL': JSON.stringify('https://bx2.tech/'),
+      'process.env.BASE_URL': JSON.stringify('https://benasb.github.io/'),
     }),
   ],
 };
