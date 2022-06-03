@@ -4,6 +4,4 @@ services:
   blog:
     image: benasbudrys/blog
     ports:
-      - 8005:80
-    environment:
-      - HTTPS_METHOD=noredirect
+      - 8005:8005
