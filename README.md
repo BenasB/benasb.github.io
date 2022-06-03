@@ -1,6 +1,8 @@
 # Personal website (benasb.github.io)
 
-[![Build and Deploy](https://github.com/BenasB/benasb.github.io/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/BenasB/benasb.github.io/actions/workflows/main.yml)
+[![Dev deployment](https://github.com/BenasB/benasb.github.io/actions/workflows/dev.yml/badge.svg?branch=dev)](https://github.com/BenasB/benasb.github.io/actions/workflows/dev.yml)
+
+[![Prod deployment](https://github.com/BenasB/benasb.github.io/actions/workflows/prod.yml/badge.svg?branch=main)](https://github.com/BenasB/benasb.github.io/actions/workflows/prod.yml)
 
 This is a personal website used to share my blog posts and info about me and my projects.
 
