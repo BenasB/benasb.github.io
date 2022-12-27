@@ -7742,7 +7742,7 @@ react-side-effect@^2.1.0:
 
 react-snap@^1.23.0:
   version "1.23.0"
-  resolved "https://registry.npmjs.org/react-snap/-/react-snap-1.23.0.tgz"
+  resolved "https://registry.yarnpkg.com/react-snap/-/react-snap-1.23.0.tgz#bf857a1810cd1ec8f9c54f5746568bccfb7447e5"
   integrity sha512-spmg2maHSedLrn6QBAfLJkyMqeeffLTIs7h40pS1copW2xBrajx4HEAcanm+7IVGO6SYCPoGwvbU3U30UFN25g==
   dependencies:
     clean-css "4.2.1"
