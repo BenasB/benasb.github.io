@@ -9,35 +9,56 @@ export const meta = {
 
 "Apsitvarkom" (Eng. "Let's clean up") is a web application that helps people track polluted locations and create cleaning events. This application has no monetary incentive for the users and relies on people doing good deeds with the goal of cleaning the environment around them. Users are presented with a map where they can report new polluted locations or view details (including the cleaning events) about existing ones.
 
-This application was made as a university project.
-
-You can check out the source code [on GitHub](https://github.com/vu-vibedosa).
-
 ![Reporting a new polluted location on Apsitvarkom](gif/apsitvarkom-report-location.gif)
 
 ![Single polluted location page on Apsitvarkom](raster/apsitvarkom-location-page.png)
 
+This application was made as a university project (thanks to Šarūnas Griškus, Vilius Bakutis and Domas Dragūnas).
+
+You can check out the source code [on GitHub](https://github.com/vu-vibedosa).
+
 ## Front end
 
-React SPA
+For our front end part of the application, we chose to create a **React SPA** mainly because I already had experience with it prior and since React has a big community, it offers a lot of documentation and material for getting started or when you're eventually stuck.
 
-### Mobile responsiveness
+### Styling
 
-#### Styling
+All of the styling on the front end is using [tailwindcss](https://tailwindcss.com/). Main things we looked out for:
 
-tailwind-css
+- Minimalistic and clean design
+  - Icons provided by [react-icons](https://react-icons.github.io/react-icons/)
+- Custom components (in hindsight, we could've even utilized [headlessui](https://headlessui.com/) to save time by not building some components from scratch)
+- Mobile responsiveness
+- [Loading animations](https://tailwindcss.com/docs/animation#pulse) for some components
+
+![Switching between desktop and mobile view on Apsitvarkom](gif/apsitvarkom-mobile-responsiveness.gif)
+
+### Map
+
+The main interactive component is the map which is provided by Google [Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/overview). However we are not communicating with it directly but rather through [@react-google-maps/api](https://github.com/JustFly1984/react-google-maps-api) which makes it more convenient since we're using React. Do note that to use any of the Google Maps functionality, you need to do that through [Google Maps Platform](https://mapsplatform.google.com/) (which is a part of Google Cloud Platform).
+
+### Routing
+
+The front end does have some routing using [React Router](https://reactrouter.com/en/main), however we needed only two routes:
+
+- `/` – main dashboard with the map and polluted location list.
+- `/location/<id>` – a page for each reported polluted location to view its data.
+
+Do note that when serving your React application, the web server has to take into account these different routes and serve the same html file (since this is just a front end routing).
 
 ### Internationalization
 
-react-i18next
+We also wanted to support multiple languages. This was achieved with [react-i18next](https://react.i18next.com/). Using [i18next-parser](https://github.com/i18next/i18next-parser), we can automatically extract messages to `.json` files from our source code and keep track of the translations more conveniently.
+
+![Switching between English and Lithuanian on Apsitvarkom](gif/apsitvarkom-internationalization.gif)
 
 ### Validation
 
-Custom
+In my experience, relying on in built HTML form validation is not that great, so we've built a basic validation system where we can create [custom validation functions](https://github.com/vu-vibedosa/apsitvarkom-fe/blob/staging/src/utils/validationFunctions.ts) and use them in our forms with custom styling.
 
 ## Back end
 
-.NET RESTful API
+For our back end part of the application, we chose to create a **RESTful API with .NET** since this was required for our project and we also had the most experience with.
 
 ### Data transfer objects
 
