@@ -60,17 +60,23 @@ In my experience, relying on in built HTML form validation is not that great, so
 
 For our back end part of the application, we chose to create a **RESTful API with .NET** since this was required for our project and we also had the most experience with.
 
+### Database
+
+We are using PostgreSQL together with EF Core. EF Core was a requirement for the project but it turned out pretty useful for us in the long run. We are setting up the EF Core model (including validation/constraints) through [fluent API](https://learn.microsoft.com/en-us/ef/core/modeling/#use-fluent-api-to-configure-a-model). In the codebase, we use the [repository pattern](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design#the-repository-pattern) for services which need to interact with the database. This helps to keep two different layers/concerns separated and allows easier testing.
+
 ### Data transfer objects
 
-Request/Response
+We faced quite a few obstacles when trying to come up with a schema/contract for our API. What we settled on in the end are these [request/response models](https://github.com/vu-vibedosa/apsitvarkom-be/tree/staging/Apsitvarkom.Models/Public) which (most of the time) are used for a single endpoint. For example a when POSTing a new polluted location, we expect a [`PollutedLocationCreateRequest`](https://github.com/vu-vibedosa/apsitvarkom-be/blob/staging/Apsitvarkom.Models/Public/PollutedLocationCreateRequest.cs) and return a [`PollutedLocationResponse`](https://github.com/vu-vibedosa/apsitvarkom-be/blob/staging/Apsitvarkom.Models/Public/PollutedLocationResponse.cs). We do not perform any business logic on these request/response models and instead we firstly map them into/from "business" models (e.g. [`PollutedLocation`](https://github.com/vu-vibedosa/apsitvarkom-be/blob/staging/Apsitvarkom.Models/PollutedLocation.cs)) using [AutoMapper](https://automapper.org/) (yes, it's pretty contraversial, but it worked out fine for us).
 
 ### Validation
 
-Fluent Validation, swagger schema
+Instead of using in built [data annotation validation](https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions-1/models-data/validation-with-the-data-annotation-validators-cs), we chose to go with [FluentValidation](https://docs.fluentvalidation.net/en/latest/) as it allows more complex validation rules (following the same mindset we had for front end validation). Of course, we wanted Swagger to reflect those rules as well, so we utilized [MicroElements.Swashbuckle.FluentValidation](https://github.com/micro-elements/MicroElements.Swashbuckle.FluentValidation) to get support for basic validation rules automatically.
 
-### Database
+![Swagger model schema for polluted location creation endpoint on Apsitvarkom](raster/apsitvarkom-swagger-schema.png)
 
-EF Core
+### Reverse geocoding
+
+You might have noticed that when reporting a new polluted location you do not need to input a title. This is because for each new polluted location we are querying the Google Maps [Geocoding API](https://developers.google.com/maps/documentation/geocoding/overview) which allows us to reverse geocode a location (assign a more human readable title from coordinates). It accepts a `language` parameter, so we're also doing this for the same list of languages that we support on the front end.
 
 ## Deployment
 
@@ -79,6 +85,8 @@ Containers, Terraform
 ### Google Cloud
 
 Diagram
+
+#### Pricing
 
 ### Github Actions
 
