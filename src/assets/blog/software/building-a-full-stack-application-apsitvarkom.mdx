@@ -1,0 +1,66 @@
+export const meta = {
+  title: 'Creating "Apsitvarkom"',
+  date: '2022-12-27',
+  excerpt:
+    'The software design, architecture and process behind "Apsitvarkom" – a full stack React and .NET application deployed on Google Cloud',
+};
+
+## Introduction
+
+"Apsitvarkom" (Eng. "Let's clean up") is a web application that helps people track polluted locations and create cleaning events. This application has no monetary incentive for the users and relies on people doing good deeds with the goal of cleaning the environment around them. Users are presented with a map where they can report new polluted locations or view details (including the cleaning events) about existing ones.
+
+This application was made as a university project.
+
+You can check out the source code [on GitHub](https://github.com/vu-vibedosa).
+
+![Reporting a new polluted location on Apsitvarkom](gif/apsitvarkom-report-location.gif)
+
+![Single polluted location page on Apsitvarkom](raster/apsitvarkom-location-page.png)
+
+## Front end
+
+React SPA
+
+### Mobile responsiveness
+
+#### Styling
+
+tailwind-css
+
+### Internationalization
+
+react-i18next
+
+### Validation
+
+Custom
+
+## Back end
+
+.NET RESTful API
+
+### Data transfer objects
+
+Request/Response
+
+### Validation
+
+Fluent Validation, swagger schema
+
+### Database
+
+EF Core
+
+## Deployment
+
+Containers, Terraform
+
+### Google Cloud
+
+Diagram
+
+### Github Actions
+
+## Things not implemented
+
+Authentication
