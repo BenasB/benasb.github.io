@@ -18,6 +18,11 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install puppeteer libraries 🎭
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm1
+
       - name: Install dependencies 🌐
         run: yarn install --frozen-lockfile
 
