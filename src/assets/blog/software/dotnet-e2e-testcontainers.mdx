@@ -1,0 +1,30 @@
+export const meta = {
+  title: '.NET end-to-end testing using Testcontainers',
+  date: '2023-08-13',
+  excerpt:
+    'Using Testcontainers for .NET to spin up applications for end-to-end testing',
+};
+
+## What are we trying to achieve?
+
+## What are Testcontainers?
+
+Your test code orchestrates the containers.
+
+## Example 1
+
+Let's start off with a super simple scenario. We have two REST APIs: Calculator and History. Calculator supports two actions: `/add` and `/subtract` which do what you expect – return you the result of the corresponding operation after you give it the operands. Upon sending the request to Calculator, it also sends the result to the History API which saves (in memory) what actions were performed and their results. The data flow diagram can be seen below.
+
+![missing image]()
+
+Let's take a small detour and talk briefly about docker networking.
+
+## Example 2
+
+Let's present a more complex scenario. Below is a diagram depicting data flow in this scenario.
+
+![Data flow of example 2](vector/e2e-example2.svg)
+
+![Technologies of example 2](vector/e2e-example2-tech.svg)
+
+## CI
