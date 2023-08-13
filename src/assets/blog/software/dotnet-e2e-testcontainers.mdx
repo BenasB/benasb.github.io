@@ -7,15 +7,27 @@ export const meta = {
 
 ## What are we trying to achieve?
 
-## What are Testcontainers?
+Create automated tests for applications composed of multiple .NET services and infrastructure components that verify some flow through the whole application. The resulting tests should be repeatable, isolated and not require any pre-provisioned infrastructure.
 
-Your test code orchestrates the containers.
+Apart from general .NET and xUnit knowledge, this post also assumes that the reader has some basic Docker knowledge.
+
+## What is Testcontainers?
+
+In short, Testcontainers is a library which allows you to spin up throwaway containers on a Docker host and use them (primarily) for testing. Containers give us a lot of options to choose from: we can spin up existing widely used images (e.g. Postgres, Redis) or create images of our own applications. Essentially, using Testcontainers your test code _orchestrates_ the containers (tells the Docker host when and how to start containers, when to terminate them, etc.).
+
+Despite this blog post being focused on .NET, Testcontainers is [supported by other languages](https://testcontainers.com/getting-started/#supported-languages-and-prerequisites) as well, so the general idea can be carried through to other languages.
+
+Testcontainers for .NET also provides us with modules, which are pre-configurations of popular Docker images. We'll be using them in Example 2.
+
+For a more thorough explanation of Testcontainers, I'd like to forward you to the official "[Getting started](https://testcontainers.com/getting-started/)" page.
+
+Also check out the [Testcontainers for .NET](https://dotnet.testcontainers.org/) page. The .NET library is heavily maintained and being improved. Props to [HofmeisterAn](https://github.com/HofmeisterAn) and maintainers!
 
 ## Example 1
 
 Let's start off with a super simple scenario. We have two REST APIs: Calculator and History. Calculator supports two actions: `/add` and `/subtract` which do what you expect – return you the result of the corresponding operation after you give it the operands. Upon sending the request to Calculator, it also sends the result to the History API which saves (in memory) what actions were performed and their results. The data flow diagram can be seen below.
 
-![missing image]()
+![Data flow of example 1](vector/e2e-example1.svg)
 
 Let's take a small detour and talk briefly about docker networking.
 
