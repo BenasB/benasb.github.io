@@ -1,4 +1,5 @@
 import PostImage from 'components/postContentComponents/postImage/PostImage';
+import { useEffect } from 'react';
 
 export const meta = {
   title: '.NET end-to-end testing using Testcontainers',
@@ -11,7 +12,7 @@ export const meta = {
 
 Create automated tests for applications composed of multiple .NET services and infrastructure components that verify some flow through the whole application. The resulting tests should be repeatable, isolated and not require any pre-provisioned infrastructure.
 
-Apart from general .NET and xUnit knowledge, this post also assumes that the reader has some basic Docker knowledge.
+Apart from general .NET and xUnit knowledge this post also assumes that the reader has some basic Docker knowledge.
 
 ## What is Testcontainers?
 
@@ -33,7 +34,7 @@ Let's start off with a super simple scenario. We have two REST APIs: Calculator 
 
 ![Data flow of example 1](vector/e2e-example1.svg)
 
-This small application only has 2 .NET services, but that is enough to explain the basic priciples. The application flow that we want to test is:
+This small application only has 2 .NET services but that is enough to explain the basic priciples. The application flow that we want to test is:
 
 1. Perform `/add` on the Calculator
 2. Perform `/subtract` on the Calculator
@@ -58,11 +59,185 @@ Before getting into the Testcontainers code, let's take a small detour and talk 
      />
    </div>
 
-With that knowledge, we can visualize how our test should look like from a network perspective.
+With that knowledge, we can visualize how our test should look like from a network perspective. For the port bindings, we can make our .NET services listen on port 80 (that's already the default when using `mcr.microsoft.com/dotnet/aspnet` base image) and the machine host ports don't really matter so let's assume they're just some port numbers `X` and `Y` (Testcontainers will assign them for us). Calculator will be calling History through the Docker network via an alias (e.g. `http://history:80`). You might be wondering why we need the port binding with History – for the application flow step 3 we will want to request data from the History API to compare it with what the test process passed into Calculator (this will be our assertion).
 
 ![Data flow of example 1](vector/e2e-example1-network.svg)
 
+Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. There's quite a lot going on, but it's doing a lot as well, so let's tackle it one by one.
+
+```csharp
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
+using DotNet.Testcontainers.Networks;
+
+namespace EndToEndTests;
+
+public class AppFixture : IAsyncLifetime
+{
+    // This network will contain the Calculator and History containers
+    private readonly INetwork _network;
+
+    // Creating an image from a Dockerfile can be skipped if you are using an already pre built image
+    private readonly IFutureDockerImage _calculatorImage;
+    private readonly IFutureDockerImage _historyImage;
+
+    private readonly IContainer _calculatorContainer;
+    private readonly IContainer _historyContainer;
+
+    // Clients are used by tests to input data and assert results
+    private HttpClient? _calculatorClient;
+    private HttpClient? _historyClient;
+
+    public HttpClient CalculatorClient => _calculatorClient ?? throw new InvalidOperationException("Calculator client was not initialized");
+    public HttpClient HistoryClient => _historyClient ?? throw new InvalidOperationException("History client was not initialized");
+
+    public AppFixture()
+    {
+        _network = new NetworkBuilder()
+          .Build();
+
+        _historyImage = new ImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "History")
+            // Used to clean up multi-stage intermediate layers
+            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+            .Build();
+
+        _calculatorImage = new ImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "Calculator")
+            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+            .Build();
+
+        _historyContainer = new ContainerBuilder()
+            .WithImage(_historyImage)
+            // Port binding required to allow connection from outside the docker network
+            // e.g. our test process needs to access this
+            .WithPortBinding(80, true)
+            .WithNetwork(_network)
+            .WithNetworkAliases(nameof(_historyContainer))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+            .Build();
+
+        _calculatorContainer = new ContainerBuilder()
+            .WithImage(_calculatorImage)
+            .WithPortBinding(80, true)
+            .WithNetwork(_network)
+            .WithNetworkAliases(nameof(_calculatorContainer))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+            // Let Calculator know how to call History by using the docker network
+            // The history container is not started at this time but we know the hostname
+            // beforehand due to setting it with WithNetworkAliases on _historyContainer.
+            .WithEnvironment("HistoryBaseAddress", $"http://{nameof(_historyContainer)}:80")
+            .Build();
+    }
+
+    public async Task DisposeAsync()
+    {
+        var calculatorDisposal = _calculatorContainer.DisposeAsync();
+        var historyDisposal = _historyContainer.DisposeAsync();
+
+        await calculatorDisposal;
+        await historyDisposal;
+
+        await _network.DisposeAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _network.CreateAsync();
+
+        // We can start both of the containers in parallel
+        // However, this might not work if some dependency must be resolved at start up
+        // In our case, Calculator depends on History but uses it only when processing requests and not on startup
+        await Task.WhenAll(
+            Task.Run(async () =>
+            {
+                await _historyImage.CreateAsync();
+                await _historyContainer.StartAsync();
+            }),
+            Task.Run(async () =>
+            {
+                await _calculatorImage.CreateAsync();
+                await _calculatorContainer.StartAsync();
+            })
+        );
+
+        _historyClient = new HttpClient()
+        {
+            // Use _container.Hostname which will resolve to 127.0.0.1 because
+            // we want to connect from the test process (outside of docker network)
+            BaseAddress = new Uri($"http://{_historyContainer.Hostname}:{_historyContainer.GetMappedPublicPort(80)}")
+        };
+
+        _calculatorClient = new HttpClient()
+        {
+            BaseAddress = new Uri($"http://{_calculatorContainer.Hostname}:{_calculatorContainer.GetMappedPublicPort(80)}")
+        };
+    }
+}
+```
+
+1. `AppFixture` inherits `IAsyncLifetime`. xUnit will handle calling `InitializeAsync` and `DisposeAsync` for us.
+2. We can see that `INetwork` is created. This is the "User defined bridge network" we talked about.
+3. Two `IFutureDockerImage`s are created. These represent the Docker images to be built from our two .NET services.
+4. Two `IContainer`s are created. Take a good look at their configuration. We specify the network to connect them to, the network alias, the port mappings and also for the Calculator container we specify how to communicate with the History API by passing in `HistoryBaseAddress` using its network alias.
+5. In the constructor, we configure and build the builders. In `InitializeAsync` we actually create the Docker network, build images and start containers and in `DisposeAsync` we stop/clean up the containers.
+6. Two `HttpClient`s are created. These will be used by our test to send requests to the containers. Note how they are configured. They require the port mappings on the containers since the clients will be calling from our test process (from the host machine).
+
+We can use this fixture in our test. Let's test that 3 step application flow we mentioned before.
+
+```csharp
+using System.Net.Http.Json;
+
+namespace EndToEndTests;
+
+public class FlowTest : IClassFixture<AppFixture>
+{
+    private readonly HttpClient _calculatorClient;
+    private readonly HttpClient _historyClient;
+
+    public FlowTest(AppFixture appFixture)
+    {
+        _calculatorClient = appFixture.CalculatorClient;
+        _historyClient = appFixture.HistoryClient;
+    }
+
+    [Fact]
+    public async Task CalculatorOperationsGetSavedToHistory()
+    {
+        var a = 4;
+        var b = 8;
+        var additionResult = a + b;
+        var subractionResult = a - b;
+
+        var historyLog = await _historyClient.GetFromJsonAsync<IEnumerable<HistoryEntry>>("history");
+        Assert.NotNull(historyLog);
+        Assert.Empty(historyLog);
+
+        var result = await _calculatorClient.GetFromJsonAsync<int>($"add?a={a}&b={b}");
+        Assert.Equal(additionResult, result);
+
+        result = await _calculatorClient.GetFromJsonAsync<int>($"subtract?a={a}&b={b}");
+        Assert.Equal(subractionResult, result);
+
+        historyLog = await _historyClient.GetFromJsonAsync<IEnumerable<HistoryEntry>>("history");
+        Assert.NotNull(historyLog);
+        Assert.Equal(new HistoryEntry[]
+        {
+            new HistoryEntry("add", additionResult),
+            new HistoryEntry("subtract", subractionResult)
+        }, historyLog);
+    }
+}
+```
+
+Passing the `AppFixture` for the `IClassFixture<T>`, xUnit will inject the `AppFixture` into our test class constructor. The fixture at this point is already initialzed (`InitializedAsync` was called) and our containers should be running. We can see that all we need in the test from the fixture are the two clients to communicate with the APIs. The test code itself is pretty straighforward and readable so it's nice that we contained all of the Testcontainers setup behind the scenes in the fixture.
+
+This test should execute successfully. Make sure Docker is running (Testcontainers will try to connect to the locally running Docker host).
+
 ## Example 2
+
+_The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleTwo)_
 
 Let's present a more complex scenario. Below is a diagram depicting data flow in this scenario.
 
