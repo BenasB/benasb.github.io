@@ -1,3 +1,5 @@
+import PostImage from 'components/postContentComponents/postImage/PostImage';
+
 export const meta = {
   title: '.NET end-to-end testing using Testcontainers',
   date: '2023-08-13',
@@ -25,11 +27,40 @@ Also check out the [Testcontainers for .NET](https://dotnet.testcontainers.org/)
 
 ## Example 1
 
+_The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleOne)_
+
 Let's start off with a super simple scenario. We have two REST APIs: Calculator and History. Calculator supports two actions: `/add` and `/subtract` which do what you expect – return you the result of the corresponding operation after you give it the operands. Upon sending the request to Calculator, it also sends the result to the History API which saves (in memory) what actions were performed and their results. The data flow diagram can be seen below.
 
 ![Data flow of example 1](vector/e2e-example1.svg)
 
-Let's take a small detour and talk briefly about docker networking.
+This small application only has 2 .NET services, but that is enough to explain the basic priciples. The application flow that we want to test is:
+
+1. Perform `/add` on the Calculator
+2. Perform `/subtract` on the Calculator
+3. Ensure that History saved the operations and they are in the order they were performed
+
+To write a test for this, we will need to spin up both the Calculator and History APIs. Of course, these services need to be containerized, so both of them should have Dockerfiles (creating them is straightforward, but out of scope of this post).
+
+Before getting into the Testcontainers code, let's take a small detour and talk briefly about Docker networking:
+
+1. By default, processes from the host machine **can't** access containers. You have to explicitly expose (also referred to as binding or mapping) ports when creating the container (this is visualized as the circle below). Exposing a port of course requires two ports: host machine port (`8888` in the diagram) which can be an arbitrary port number and Docker container port (`80` in the diagram). In the diagram below, if the container was for example a web server listening on port `80` it could be accessed from the host machine by requesting `http://localhost:8888`. This is discussed in "[Published ports](https://docs.docker.com/network/#published-ports)".
+   <div style={{ margin: '20px 0' }}>
+     <PostImage
+       alt={'Docker port mapping'}
+       src={'vector/e2e-docker-network-1.svg'}
+     />
+   </div>
+2. By default, containers on the same Docker (bridge) network **can** access each other. On a (user defined bridge) Docker network (which we'll be creating during our tests) containers can reach each other using IP, hostname or network alias. You don't need to expose any ports for other containers to reach them. We'll be using network aliases for container to container communication. In the diagram below, if Container 2 was for example a web server listening on port `80` then Container 1 could access it by requesting `http://ben:80`. This is discussed in "[Bridge](https://docs.docker.com/network/drivers/bridge/#differences-between-user-defined-bridges-and-the-default-bridge)".
+   <div style={{ margin: '20px 0' }}>
+     <PostImage
+       alt={'Docker port mapping'}
+       src={'vector/e2e-docker-network-2.svg'}
+     />
+   </div>
+
+With that knowledge, we can visualize how our test should look like from a network perspective.
+
+![Data flow of example 1](vector/e2e-example1-network.svg)
 
 ## Example 2
 
