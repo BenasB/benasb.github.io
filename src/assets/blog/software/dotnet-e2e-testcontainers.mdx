@@ -1,0 +1,580 @@
+import PostImage from 'components/postContentComponents/postImage/PostImage';
+import { useEffect } from 'react';
+
+export const meta = {
+  title: '.NET end-to-end testing using Testcontainers',
+  date: '2023-08-13',
+  excerpt:
+    'Using Testcontainers for .NET to spin up applications for end-to-end testing',
+};
+
+## What are we trying to achieve?
+
+Create automated tests for applications composed of multiple .NET services and infrastructure components that verify some flow through the whole application. The resulting tests should be repeatable, isolated and not require any pre-provisioned infrastructure.
+
+Apart from general .NET and xUnit knowledge this post also assumes that the reader has some basic Docker knowledge.
+
+## What is Testcontainers?
+
+In short, Testcontainers is a library which allows you to spin up throwaway containers on a Docker host and use them (primarily) for testing. Containers give us a lot of options to choose from: we can spin up existing widely used images (e.g. Postgres, Redis) or create images of our own applications. Essentially, using Testcontainers your test code _orchestrates_ the containers (tells the Docker host when and how to start containers, when to terminate them, etc.).
+
+Despite this blog post being focused on .NET, Testcontainers is [supported by other languages](https://testcontainers.com/getting-started/#supported-languages-and-prerequisites) as well, so the general idea can be carried through to other languages.
+
+Testcontainers for .NET also provides us with modules, which are pre-configurations of popular Docker images. We'll be using them in Example 2.
+
+For a more thorough explanation of Testcontainers, I'd like to forward you to the official "[Getting started](https://testcontainers.com/getting-started/)" page.
+
+Also check out the [Testcontainers for .NET](https://dotnet.testcontainers.org/) page. The .NET library is heavily maintained and being improved. Props to [HofmeisterAn](https://github.com/HofmeisterAn) and maintainers!
+
+## Example 1
+
+_The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleOne)_
+
+Let's start off with a super simple scenario. We have two REST APIs: Calculator and History. Calculator supports two actions: `/add` and `/subtract` which do what you expect – return you the result of the corresponding operation after you give it the operands. Upon sending the request to Calculator, it also sends the result to the History API which saves (in memory) what actions were performed and their results. The data flow diagram can be seen below.
+
+![Data flow of example 1](vector/e2e-example1.svg)
+
+This small application only has 2 .NET services but that is enough to explain the basic principles. The application flow that we want to test is:
+
+1. Perform `/add` on the Calculator
+2. Perform `/subtract` on the Calculator
+3. Ensure that History saved the operations and they are in the order they were performed
+
+To write a test for this, we will need to spin up both the Calculator and History APIs. Of course, these services need to be containerized, so both of them should have Dockerfiles (creating them is straightforward, but out of scope of this post).
+
+Before getting into the Testcontainers code, let's take a small detour and talk briefly about Docker networking:
+
+1. By default, processes from the host machine **can't** access containers. You have to explicitly expose (also referred to as binding or mapping) ports when creating the container (this is visualized as the circle below). Exposing a port of course requires two ports: the host machine port (`8888` in the diagram) which can be an arbitrary port number and the Docker container port (`80` in the diagram). In the diagram below, if the container was for example a web server listening on port `80` it could be accessed from the host machine by requesting `http://localhost:8888`. This is discussed in "[Published ports](https://docs.docker.com/network/#published-ports)".
+   <div style={{ margin: '20px 0' }}>
+     <PostImage
+       alt={'Docker port mapping'}
+       src={'vector/e2e-docker-network-1.svg'}
+     />
+   </div>
+2. By default, containers on the same Docker (bridge) network **can** access each other. On a (user defined bridge) Docker network (which we'll be creating during our tests) containers can reach each other using IP, hostname or network alias. You don't need to expose any ports for other containers to reach them. We'll be using network aliases for container-to-container communication. In the diagram below, if Container 2 was for example a web server listening on port `80` then Container 1 could access it by requesting `http://ben:80`. This is discussed in "[Bridge](https://docs.docker.com/network/drivers/bridge/#differences-between-user-defined-bridges-and-the-default-bridge)".
+   <div style={{ margin: '20px 0' }}>
+     <PostImage
+       alt={'Docker port mapping'}
+       src={'vector/e2e-docker-network-2.svg'}
+     />
+   </div>
+
+With that knowledge, we can visualize how our test should look like from a network perspective. For the port bindings, we can make our .NET services listen on port 80 (that's already the default when using `mcr.microsoft.com/dotnet/aspnet` base image) and the machine host ports don't really matter so let's assume they're just some port numbers `X` and `Y` (Testcontainers will assign them for us). Calculator will be calling History through the Docker network via an alias (e.g. `http://history:80`). You might be wondering why we need the port binding with History – for the application flow step 3 we will want to request data from the History API to compare it with what the test process passed into Calculator (this will be our assertion).
+
+![Network of example 1](vector/e2e-example1-network.svg)
+
+Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. At first, it might seem like a lot of code, but it's doing a lot as well, so let's tackle it one by one.
+
+```csharp
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
+using DotNet.Testcontainers.Networks;
+
+namespace EndToEndTests;
+
+public class AppFixture : IAsyncLifetime
+{
+    // This network will contain the Calculator and History containers
+    private readonly INetwork _network;
+
+    // Creating an image from a Dockerfile can be skipped if you are using an already pre built image
+    private readonly IFutureDockerImage _calculatorImage;
+    private readonly IFutureDockerImage _historyImage;
+
+    private readonly IContainer _calculatorContainer;
+    private readonly IContainer _historyContainer;
+
+    // Clients are used by tests to input data and assert results
+    private HttpClient? _calculatorClient;
+    private HttpClient? _historyClient;
+
+    public HttpClient CalculatorClient => _calculatorClient ?? throw new InvalidOperationException("Calculator client was not initialized");
+    public HttpClient HistoryClient => _historyClient ?? throw new InvalidOperationException("History client was not initialized");
+
+    public AppFixture()
+    {
+        _network = new NetworkBuilder()
+          .Build();
+
+        _historyImage = new ImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "History")
+            // Used to clean up multi-stage intermediate layers
+            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+            .Build();
+
+        _calculatorImage = new ImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "Calculator")
+            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+            .Build();
+
+        _historyContainer = new ContainerBuilder()
+            .WithImage(_historyImage)
+            // Port binding required to allow connection from outside the docker network
+            // e.g. our test process needs to access this
+            .WithPortBinding(80, true)
+            .WithNetwork(_network)
+            .WithNetworkAliases(nameof(_historyContainer))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+            .Build();
+
+        _calculatorContainer = new ContainerBuilder()
+            .WithImage(_calculatorImage)
+            .WithPortBinding(80, true)
+            .WithNetwork(_network)
+            .WithNetworkAliases(nameof(_calculatorContainer))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+            // Let Calculator know how to call History by using the docker network
+            // The history container is not started at this time but we know the hostname
+            // beforehand due to setting it with WithNetworkAliases on _historyContainer.
+            .WithEnvironment("HistoryBaseAddress", $"http://{nameof(_historyContainer)}:80")
+            .Build();
+    }
+
+    public async Task DisposeAsync()
+    {
+        var calculatorDisposal = _calculatorContainer.DisposeAsync();
+        var historyDisposal = _historyContainer.DisposeAsync();
+
+        await calculatorDisposal;
+        await historyDisposal;
+
+        await _network.DisposeAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _network.CreateAsync();
+
+        // We can start both of the containers in parallel
+        // However, this might not work if some dependency must be resolved at start up
+        // In our case, Calculator depends on History but uses it only when processing requests and not on startup
+        await Task.WhenAll(
+            Task.Run(async () =>
+            {
+                await _historyImage.CreateAsync();
+                await _historyContainer.StartAsync();
+            }),
+            Task.Run(async () =>
+            {
+                await _calculatorImage.CreateAsync();
+                await _calculatorContainer.StartAsync();
+            })
+        );
+
+        _historyClient = new HttpClient()
+        {
+            // Use _container.Hostname which will resolve to 127.0.0.1 because
+            // we want to connect from the test process (outside of docker network)
+            BaseAddress = new Uri($"http://{_historyContainer.Hostname}:{_historyContainer.GetMappedPublicPort(80)}")
+        };
+
+        _calculatorClient = new HttpClient()
+        {
+            BaseAddress = new Uri($"http://{_calculatorContainer.Hostname}:{_calculatorContainer.GetMappedPublicPort(80)}")
+        };
+    }
+}
+```
+
+1. `AppFixture` inherits `IAsyncLifetime`. xUnit will handle calling `InitializeAsync` and `DisposeAsync` for us.
+2. We can see that `INetwork` is created. This is the "User defined bridge network" we talked about.
+3. Two `IFutureDockerImage`s are created. These represent the Docker images to be built from our two .NET services.
+4. Two `IContainer`s are created. Take a good look at their configuration. We specify the network to connect them to, the network alias, the port mappings and also for the Calculator container we specify how to communicate with the History API by passing in `HistoryBaseAddress` using its network alias.
+5. In the constructor, we configure and build the builders. In `InitializeAsync` we actually create the Docker network, build images and start containers and in `DisposeAsync` we stop/clean up the containers.
+6. Two `HttpClient`s are created. These will be used by our test to send requests to the containers. Note how they are configured. They require the port mappings on the containers since the clients will be calling from our test process (from the host machine).
+
+We can use this fixture in our test. Let's test that 3 step application flow we mentioned before.
+
+```csharp
+using System.Net.Http.Json;
+
+namespace EndToEndTests;
+
+public class FlowTest : IClassFixture<AppFixture>
+{
+    private readonly HttpClient _calculatorClient;
+    private readonly HttpClient _historyClient;
+
+    public FlowTest(AppFixture appFixture)
+    {
+        _calculatorClient = appFixture.CalculatorClient;
+        _historyClient = appFixture.HistoryClient;
+    }
+
+    [Fact]
+    public async Task CalculatorOperationsGetSavedToHistory()
+    {
+        var a = 4;
+        var b = 8;
+        var additionResult = a + b;
+        var subractionResult = a - b;
+
+        var historyLog = await _historyClient.GetFromJsonAsync<IEnumerable<HistoryEntry>>("history");
+        Assert.NotNull(historyLog);
+        Assert.Empty(historyLog);
+
+        var result = await _calculatorClient.GetFromJsonAsync<int>($"add?a={a}&b={b}");
+        Assert.Equal(additionResult, result);
+
+        result = await _calculatorClient.GetFromJsonAsync<int>($"subtract?a={a}&b={b}");
+        Assert.Equal(subractionResult, result);
+
+        historyLog = await _historyClient.GetFromJsonAsync<IEnumerable<HistoryEntry>>("history");
+        Assert.NotNull(historyLog);
+        Assert.Equal(new HistoryEntry[]
+        {
+            new HistoryEntry("add", additionResult),
+            new HistoryEntry("subtract", subractionResult)
+        }, historyLog);
+    }
+}
+```
+
+Passing the `AppFixture` for the `IClassFixture<T>`, xUnit will inject the `AppFixture` into our test class constructor. The fixture at this point is already initialized (`InitializedAsync` was called) and our containers should be running. We can see that all we need in the test from the fixture are the two clients to communicate with the APIs. The test code itself is pretty straightforward and readable so it's nice that we contained all of the Testcontainers setup behind the scenes in the fixture.
+
+This test should execute successfully. Make sure Docker is running (Testcontainers will try to connect to the locally running Docker host).
+
+## Example 2
+
+_The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleTwo)_
+
+Let's tackle a more complex scenario. Alongside .NET services, we can add some infrastructure components. This scenario models a blogging application. Below is a diagram depicting the data flow in this scenario.
+
+![Data flow of example 2](vector/e2e-example2.svg)
+
+- Blog is a Blazor Server service which displays the posts retrieved from Blog DB and also allows the users to fill in a newsletter form which saves their email to Newsletter DB.
+- Blog Admin is a Blazor Server service which allows a user to fill in a form and create a new blog post which gets saved to the Blog DB and a message gets sent into the Blog Events queue.
+- Notifier is a .NET worker service which, upon getting a message from the Blog Events queue, retrieves the blog post title from Blog DB, retrieves all subscribers from Newsletter DB and sends them an email informing them about the new blog post.
+
+Similarly to Example 1, let's define an application flow that we want to test:
+
+1. User fills in the newsletter form in Blog
+2. User creates a new post in Blog Admin
+3. Check if the user received an email informing about the new post
+
+As for the technologies we'll be using:
+
+- MySQL with Entity Framework for the databases
+- [RabbitMQ](https://www.rabbitmq.com/) for the queue
+- [MailHog](https://github.com/mailhog/MailHog) for the SMTP server (it even comes with an API to easily retrieve sent emails)
+- [Playwright](https://playwright.dev/dotnet/) to act as the user on Blog and Blog Admin
+
+We can also visualize how the test should look from a network perspective again:
+
+![Network of example 2](vector/e2e-example2-network.svg)
+
+We can move on to the code. The approach is a bit different this time: every container will have a separate fixture and the `AppFixture` will aggregate them.
+
+Let's take a look at some of the container fixture classes (you can inspect all of the fixtures in the source code on GitHub).
+
+The `RabbitMqFixture` is responsible for the RabbitMQ container (duh). One new thing here is that we're using the RabbitMQ module provided by Testcontainers for .NET. The module does some pre-configuration for you, such as setting up port bindings (which we're not using, since we only need to communicate inside the Docker network), configuring the RabbitMQ host, supplying you the connection string, etc. We've created the `InternalNetworkConnectionString` (using network alias) ourselves since we need it for container-to-container communication.
+
+```csharp
+using DotNet.Testcontainers.Networks;
+using Testcontainers.RabbitMq;
+
+namespace EndToEndTests.Fixtures;
+
+public class RabbitMqFixture : IAsyncLifetime
+{
+    private const int InternalPort = 5672;
+    private const string Username = "rabbitmq";
+    private const string Password = "rabbitmq";
+
+    private readonly RabbitMqContainer _container;
+
+    public static string InternalNetworkConnectionString =>
+        $"amqp://{Username}:{Password}@{nameof(RabbitMqFixture)}:{InternalPort}";
+
+    public RabbitMqFixture(INetwork? network)
+    {
+        _container = new RabbitMqBuilder()
+            .WithNetwork(network)
+            .WithNetworkAliases(nameof(RabbitMqFixture))
+            .WithUsername(Username)
+            .WithPassword(Password)
+            .Build();
+    }
+
+    public Task InitializeAsync() => _container.StartAsync();
+
+    public Task DisposeAsync() => _container.DisposeAsync().AsTask();
+}
+```
+
+The `MailFixture` is responsible for the MailHog container. There's no module for MailHog, so we'll need to manually specify the image. This is an interesting case since we will need both container-to-container communication (Notifier container will call this) and communication from the host machine as well (to assert we'll call the MailHog's API from the Test Process). For the former, we've created `InternalNetworkConnectionString` (using network alias) and for the latter, we'll be using `ApiConnectionString` (using hostname). Of course, because the API will be called from the host machine, we also need to create the port binding for the `InternalApiPort`.
+
+```csharp
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
+
+namespace EndToEndTests.Fixtures;
+
+public class MailFixture : IAsyncLifetime
+{
+    private const int InternalSmtpPort = 1025;
+    private const int InternalApiPort = 8025; // MailHog also has an API to retrieve sent emails
+
+    private readonly IContainer _container;
+
+    public string ApiConnectionString =>
+        $"http://{_container.Hostname}:{_container.GetMappedPublicPort(InternalApiPort)}";
+    public static string InternalNetworkConnectionString =>
+        $"smtp://{nameof(MailFixture)}:{InternalSmtpPort}";
+
+    public MailFixture(INetwork? network)
+    {
+        _container = new ContainerBuilder()
+            .WithImage("mailhog/mailhog:latest")
+            .WithNetwork(network)
+            .WithNetworkAliases(nameof(MailFixture))
+            .WithPortBinding(InternalApiPort, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(InternalSmtpPort))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(InternalApiPort).ForPath("/")
+            ))
+            .Build();
+    }
+
+    public Task InitializeAsync() => _container.StartAsync();
+
+    public Task DisposeAsync() => _container.DisposeAsync().AsTask();
+}
+```
+
+Last but not least, let's take a look at the `BlogAdmin` fixture. We're building the image from a Dockerfile again. We let the Blog Admin know how to connect to RabbitMQ and MySQL using the internal network connection strings (using network aliases). We also add a port binding and create the `ConnectionString` so that Playwright (which will be running on our host machine) can call the Blog Admin.
+
+```csharp
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Images;
+using DotNet.Testcontainers.Networks;
+
+namespace EndToEndTests.Fixtures;
+
+public class BlogAdminFixture : IAsyncLifetime
+{
+    private const int InternalPort = 80;
+
+    private readonly IFutureDockerImage _image;
+    private readonly IContainer _container;
+
+    public string ConnectionString => $"http://{_container.Hostname}:{_container.GetMappedPublicPort(InternalPort)}";
+
+    public BlogAdminFixture(INetwork? network)
+    {
+        _image = new ImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory().DirectoryPath)
+            .WithDockerfile("Dockerfile.BlogAdmin")
+            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+            .Build();
+
+        _container = new ContainerBuilder()
+            .WithImage(_image)
+            .WithNetwork(network)
+            .WithNetworkAliases(nameof(BlogAdminFixture))
+            .WithPortBinding(InternalPort, true)
+            .WithEnvironment("ConnectionStrings__RabbitUri", RabbitMqFixture.InternalNetworkConnectionString)
+            .WithEnvironment("ConnectionStrings__BlogDatabase", MySqlFixture.BlogInternalNetworkConnectionString)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPort(InternalPort).ForPath("/")
+            ))
+            .Build();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _image.CreateAsync();
+        await _container.StartAsync();
+    }
+
+    public Task DisposeAsync() => _container.DisposeAsync().AsTask();
+}
+```
+
+As mentioned before, `AppFixture` aggregates all of these container fixtures.
+
+```csharp
+using DataAccess;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Networks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Playwright;
+
+namespace EndToEndTests.Fixtures;
+
+public class AppFixture : IAsyncLifetime
+{
+    private readonly INetwork _network;
+    private readonly PlaywrightFixture _playwrightFixture;
+    private readonly MySqlFixture _mySqlFixture;
+    private readonly RabbitMqFixture _rabbitMqFixture;
+    private readonly MailFixture _mailFixture;
+    private readonly BlogFixture _blogFixture;
+    private readonly BlogAdminFixture _blogAdminFixture;
+    private readonly NotifierFixture _notifierFixture;
+    private IPage? _blogPage;
+    private IPage? _blogAdminPage;
+    private MailClient? _mailClient;
+
+    public IPage BlogPage => _blogPage ?? throw new InvalidOperationException("Blog page is not initialized yet");
+    public IPage BlogAdminPage => _blogAdminPage ?? throw new InvalidOperationException("BlogAdmin page is not initialized yet");
+    public MailClient MailClient => _mailClient ?? throw new InvalidOperationException("MailClient is not initialized yet");
+
+    public AppFixture()
+    {
+        _network = new NetworkBuilder()
+          .Build();
+
+        _playwrightFixture = new PlaywrightFixture();
+        _mySqlFixture = new MySqlFixture(_network);
+        _rabbitMqFixture = new RabbitMqFixture(_network);
+        _mailFixture = new MailFixture(_network);
+
+        _blogFixture = new BlogFixture(_network);
+        _blogAdminFixture = new BlogAdminFixture(_network);
+        _notifierFixture = new NotifierFixture(_network);
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _playwrightFixture.InitializeAsync();
+
+        await _network.CreateAsync();
+
+        // Start up infrastructure
+        await Task.WhenAll(
+            _mySqlFixture.InitializeAsync(),
+            _rabbitMqFixture.InitializeAsync(),
+            _mailFixture.InitializeAsync()
+        );
+
+        await InitializeDbSchema();
+        _mailClient = new MailClient(new Uri(_mailFixture.ApiConnectionString));
+
+        // Start up applications
+        await Task.WhenAll(
+            _blogFixture.InitializeAsync(),
+            _blogAdminFixture.InitializeAsync(),
+            _notifierFixture.InitializeAsync()
+        );
+
+        _blogPage = await _playwrightFixture.Browser.NewPageAsync();
+        await _blogPage.GotoAsync(_blogFixture.ConnectionString);
+
+        _blogAdminPage = await _playwrightFixture.Browser.NewPageAsync();
+        await _blogAdminPage.GotoAsync(_blogAdminFixture.ConnectionString);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _playwrightFixture.DisposeAsync();
+
+        await Task.WhenAll(
+            _blogFixture.DisposeAsync(),
+            _blogAdminFixture.DisposeAsync(),
+            _notifierFixture.DisposeAsync()
+        );
+
+        _mailClient?.Dispose();
+
+        await Task.WhenAll(
+            _mySqlFixture.DisposeAsync(),
+            _rabbitMqFixture.DisposeAsync(),
+            _mailFixture.DisposeAsync()
+        );
+
+        await _network.DisposeAsync();
+    }
+
+    private async Task InitializeDbSchema()
+    {
+        var blogContextOptions = new DbContextOptionsBuilder<BlogContext>().UseMySql(
+            _mySqlFixture.BlogConnectionString,
+            ServerVersion.AutoDetect(_mySqlFixture.BlogConnectionString)
+        ).Options;
+        var newsletterContextOptions = new DbContextOptionsBuilder<NewsletterContext>().UseMySql(
+            _mySqlFixture.NewsletterConnectionString,
+            ServerVersion.AutoDetect(_mySqlFixture.NewsletterConnectionString)
+        ).Options;
+
+        using var newsletterContext = new NewsletterContext(newsletterContextOptions);
+        using var blogContext = new BlogContext(blogContextOptions);
+
+        await Task.WhenAll(
+            newsletterContext.Database.EnsureCreatedAsync(),
+            blogContext.Database.EnsureCreatedAsync()
+        );
+    }
+}
+```
+
+The `AppFixture` supplies our test code with two Playwright's `IPage`s for Blog and Blog Admin and a `MailClient` to retrieve the sent emails from MailHog. Let's see how to test out the application flow we described earlier.
+
+```csharp
+using EndToEndTests.Fixtures;
+using Microsoft.Playwright;
+
+namespace EndToEndTests;
+
+public class FlowTest: IClassFixture<AppFixture>
+{
+    private readonly IPage _blogPage;
+    private readonly IPage _blogAdminPage;
+    private readonly MailClient _mailClient;
+
+    public FlowTest(AppFixture appFixture)
+    {
+        _blogPage = appFixture.BlogPage;
+        _blogAdminPage = appFixture.BlogAdminPage;
+        _mailClient = appFixture.MailClient;
+    }
+
+    [Fact]
+    public async Task EmailIsSentWhenNewPostIsCreated()
+    {
+        var email = "test@benasb.github.io";
+        await _blogPage.GetByPlaceholder("Email").FillAsync(email);
+        await _blogPage.GetByRole(AriaRole.Button, new()
+        {
+            Name = "Subscribe",
+            Exact = true,
+        }).ClickAsync();
+
+        var newPostTitle = "Immaculate new post";
+        await _blogAdminPage.GetByPlaceholder("Title").FillAsync(newPostTitle);
+        await _blogAdminPage.GetByPlaceholder("Body").FillAsync("Lorem ipsum");
+        await _blogAdminPage.GetByRole(AriaRole.Button, new()
+        {
+            Name = "Create",
+            Exact = true,
+        }).ClickAsync();
+
+        // Give some time for the message to be consumed and email sent
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        var allMessagesResponse = await _mailClient.GetAllMessagesAsync();
+        Assert.NotNull(allMessagesResponse);
+        var sentEmailContent = Assert.Single(allMessagesResponse.Items).Content;
+        Assert.Contains(newPostTitle, sentEmailContent.Body);
+        var toHeader = Assert.Single(sentEmailContent.Headers.To);
+        Assert.Equal(email, toHeader);
+    }
+}
+```
+
+Again, we can see that the test code itself is pretty straightforward and all of the Testcontainers setup is left to the `AppFixture` which allows you to not mix your test logic with the setup.
+
+Of course, this test should execute successfully. Make sure Docker is running (Testcontainers will try to connect to the locally running Docker host).
+
+## CI
+
+Ideally, we want to run these kinds of tests during our Continuous Integration process. This is of course possible and pretty easy with GitHub Actions. Check out the [YAML file](https://github.com/BenasB/dotnet-e2e-testcontainers/blob/main/.github/workflows/dotnet.yml) in the example repository. For other providers there may be additional setup required, please refer to [Testcontainers for .NET](https://dotnet.testcontainers.org/cicd/).
+
+![GitHub Actions running the two examples successfully](raster/e2e-ci.png)
+
+## Conclusion
+
+This post covers quite a lot: Testcontainers, Docker networking, xUnit, so I encourage you to try it out practically yourself and play around. Hopefully the gained knowledge will make your end-to-end testing strategy more reliable and convenient.
