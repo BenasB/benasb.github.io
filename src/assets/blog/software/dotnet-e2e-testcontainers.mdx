@@ -34,7 +34,7 @@ Let's start off with a super simple scenario. We have two REST APIs: Calculator 
 
 ![Data flow of example 1](vector/e2e-example1.svg)
 
-This small application only has 2 .NET services but that is enough to explain the basic priciples. The application flow that we want to test is:
+This small application only has 2 .NET services but that is enough to explain the basic principles. The application flow that we want to test is:
 
 1. Perform `/add` on the Calculator
 2. Perform `/subtract` on the Calculator
@@ -61,9 +61,9 @@ Before getting into the Testcontainers code, let's take a small detour and talk 
 
 With that knowledge, we can visualize how our test should look like from a network perspective. For the port bindings, we can make our .NET services listen on port 80 (that's already the default when using `mcr.microsoft.com/dotnet/aspnet` base image) and the machine host ports don't really matter so let's assume they're just some port numbers `X` and `Y` (Testcontainers will assign them for us). Calculator will be calling History through the Docker network via an alias (e.g. `http://history:80`). You might be wondering why we need the port binding with History – for the application flow step 3 we will want to request data from the History API to compare it with what the test process passed into Calculator (this will be our assertion).
 
-![Data flow of example 1](vector/e2e-example1-network.svg)
+![Network of example 1](vector/e2e-example1-network.svg)
 
-Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. There's quite a lot going on, but it's doing a lot as well, so let's tackle it one by one.
+Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. At first it might seem like a lot of code, but it's doing a lot as well, so let's tackle it one by one.
 
 ```csharp
 using DotNet.Testcontainers.Builders;
@@ -239,9 +239,19 @@ This test should execute successfully. Make sure Docker is running (Testcontaine
 
 _The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleTwo)_
 
-Let's present a more complex scenario. Below is a diagram depicting data flow in this scenario.
+Let's tackle a more complex scenario. Alongside .NET services we can add some infrastructure components. This scenario models a blogging application. Below is a diagram depicting data flow in this scenario.
 
 ![Data flow of example 2](vector/e2e-example2.svg)
+
+- Blog is a Blazor Server service which displays the posts retrieved from Blog DB and also allows the users to fill in a newsletter form which saves their email to Newsletter DB.
+- Blog Admin is a Blazor Server service which allows a user to fill in a form and create a new blog post which gets saved to the Blog DB and a message gets sent into the Blog Events queue.
+- Notifier is a .NET worker service which, upon getting a message from the Blog Events queue, retrieves the blog post title from Blog DB, retrieves all subscribers from Newsletter DB and sends them an email informing about the new blog post.
+
+Similarly to Example 1, let's define an application flow that we want to test:
+
+1. User fills in the newsletter form in Blog
+2. User creates a new post in Blog Admin
+3. Check if the user received an email informing about the new post
 
 ![Technologies of example 2](vector/e2e-example2-tech.svg)
 
