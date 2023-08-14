@@ -44,14 +44,14 @@ To write a test for this, we will need to spin up both the Calculator and Histor
 
 Before getting into the Testcontainers code, let's take a small detour and talk briefly about Docker networking:
 
-1. By default, processes from the host machine **can't** access containers. You have to explicitly expose (also referred to as binding or mapping) ports when creating the container (this is visualized as the circle below). Exposing a port of course requires two ports: host machine port (`8888` in the diagram) which can be an arbitrary port number and Docker container port (`80` in the diagram). In the diagram below, if the container was for example a web server listening on port `80` it could be accessed from the host machine by requesting `http://localhost:8888`. This is discussed in "[Published ports](https://docs.docker.com/network/#published-ports)".
+1. By default, processes from the host machine **can't** access containers. You have to explicitly expose (also referred to as binding or mapping) ports when creating the container (this is visualized as the circle below). Exposing a port of course requires two ports: the host machine port (`8888` in the diagram) which can be an arbitrary port number and the Docker container port (`80` in the diagram). In the diagram below, if the container was for example a web server listening on port `80` it could be accessed from the host machine by requesting `http://localhost:8888`. This is discussed in "[Published ports](https://docs.docker.com/network/#published-ports)".
    <div style={{ margin: '20px 0' }}>
      <PostImage
        alt={'Docker port mapping'}
        src={'vector/e2e-docker-network-1.svg'}
      />
    </div>
-2. By default, containers on the same Docker (bridge) network **can** access each other. On a (user defined bridge) Docker network (which we'll be creating during our tests) containers can reach each other using IP, hostname or network alias. You don't need to expose any ports for other containers to reach them. We'll be using network aliases for container to container communication. In the diagram below, if Container 2 was for example a web server listening on port `80` then Container 1 could access it by requesting `http://ben:80`. This is discussed in "[Bridge](https://docs.docker.com/network/drivers/bridge/#differences-between-user-defined-bridges-and-the-default-bridge)".
+2. By default, containers on the same Docker (bridge) network **can** access each other. On a (user defined bridge) Docker network (which we'll be creating during our tests) containers can reach each other using IP, hostname or network alias. You don't need to expose any ports for other containers to reach them. We'll be using network aliases for container-to-container communication. In the diagram below, if Container 2 was for example a web server listening on port `80` then Container 1 could access it by requesting `http://ben:80`. This is discussed in "[Bridge](https://docs.docker.com/network/drivers/bridge/#differences-between-user-defined-bridges-and-the-default-bridge)".
    <div style={{ margin: '20px 0' }}>
      <PostImage
        alt={'Docker port mapping'}
@@ -63,7 +63,7 @@ With that knowledge, we can visualize how our test should look like from a netwo
 
 ![Network of example 1](vector/e2e-example1-network.svg)
 
-Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. At first it might seem like a lot of code, but it's doing a lot as well, so let's tackle it one by one.
+Finally, let's get to the code! xUnit provides us a way to share context between tests using so-called [fixtures](https://xunit.net/docs/shared-context) – that's what we want. We'll create an `AppFixture` class which will be responsible for the whole lifetime of the containers. At first, it might seem like a lot of code, but it's doing a lot as well, so let's tackle it one by one.
 
 ```csharp
 using DotNet.Testcontainers.Builders;
@@ -231,7 +231,7 @@ public class FlowTest : IClassFixture<AppFixture>
 }
 ```
 
-Passing the `AppFixture` for the `IClassFixture<T>`, xUnit will inject the `AppFixture` into our test class constructor. The fixture at this point is already initialzed (`InitializedAsync` was called) and our containers should be running. We can see that all we need in the test from the fixture are the two clients to communicate with the APIs. The test code itself is pretty straighforward and readable so it's nice that we contained all of the Testcontainers setup behind the scenes in the fixture.
+Passing the `AppFixture` for the `IClassFixture<T>`, xUnit will inject the `AppFixture` into our test class constructor. The fixture at this point is already initialized (`InitializedAsync` was called) and our containers should be running. We can see that all we need in the test from the fixture are the two clients to communicate with the APIs. The test code itself is pretty straightforward and readable so it's nice that we contained all of the Testcontainers setup behind the scenes in the fixture.
 
 This test should execute successfully. Make sure Docker is running (Testcontainers will try to connect to the locally running Docker host).
 
@@ -239,13 +239,13 @@ This test should execute successfully. Make sure Docker is running (Testcontaine
 
 _The source code for this can be found on [GitHub](https://github.com/BenasB/dotnet-e2e-testcontainers/tree/main/ExampleTwo)_
 
-Let's tackle a more complex scenario. Alongside .NET services we can add some infrastructure components. This scenario models a blogging application. Below is a diagram depicting the data flow in this scenario.
+Let's tackle a more complex scenario. Alongside .NET services, we can add some infrastructure components. This scenario models a blogging application. Below is a diagram depicting the data flow in this scenario.
 
 ![Data flow of example 2](vector/e2e-example2.svg)
 
 - Blog is a Blazor Server service which displays the posts retrieved from Blog DB and also allows the users to fill in a newsletter form which saves their email to Newsletter DB.
 - Blog Admin is a Blazor Server service which allows a user to fill in a form and create a new blog post which gets saved to the Blog DB and a message gets sent into the Blog Events queue.
-- Notifier is a .NET worker service which, upon getting a message from the Blog Events queue, retrieves the blog post title from Blog DB, retrieves all subscribers from Newsletter DB and sends them an email informing about the new blog post.
+- Notifier is a .NET worker service which, upon getting a message from the Blog Events queue, retrieves the blog post title from Blog DB, retrieves all subscribers from Newsletter DB and sends them an email informing them about the new blog post.
 
 Similarly to Example 1, let's define an application flow that we want to test:
 
@@ -260,15 +260,15 @@ As for the technologies we'll be using:
 - [MailHog](https://github.com/mailhog/MailHog) for the SMTP server (it even comes with an API to easily retrieve sent emails)
 - [Playwright](https://playwright.dev/dotnet/) to act as the user on Blog and Blog Admin
 
-We can also visualize how the test should look like from a network perspective again:
+We can also visualize how the test should look from a network perspective again:
 
 ![Network of example 2](vector/e2e-example2-network.svg)
 
-We can move onto the code. The approach is a bit different this time: every container will have a separate fixture and the `AppFixture` will aggregate them.
+We can move on to the code. The approach is a bit different this time: every container will have a separate fixture and the `AppFixture` will aggregate them.
 
 Let's take a look at some of the container fixture classes (you can inspect all of the fixtures in the source code on GitHub).
 
-The `RabbitMqFixture` is responsible for the RabbitMQ container (duh). One new thing here is that we're using the RabbitMQ module provided by Testcontainers for .NET. The module does some pre-configuration for you, such as setting up port bindings (which we're not using, since we only need to communicate inside the Docker network), configuring the RabbitMQ host, supplying you the connection string, etc. We've created the `InternalNetworkConnectionString` (using network alias) ourselves, since we need it for container to container communication.
+The `RabbitMqFixture` is responsible for the RabbitMQ container (duh). One new thing here is that we're using the RabbitMQ module provided by Testcontainers for .NET. The module does some pre-configuration for you, such as setting up port bindings (which we're not using, since we only need to communicate inside the Docker network), configuring the RabbitMQ host, supplying you the connection string, etc. We've created the `InternalNetworkConnectionString` (using network alias) ourselves since we need it for container-to-container communication.
 
 ```csharp
 using DotNet.Testcontainers.Networks;
@@ -303,7 +303,7 @@ public class RabbitMqFixture : IAsyncLifetime
 }
 ```
 
-The `MailFixture` is responsible for the MailHog container. There's no module for MailHog, so we'll need to manually specify the image. This is an interesting case, since we will need both container to container communication (Notifier container will call this) and communication from host machine as well (to assert we'll call the MailHog's API from the Test Process). For the former we've created `InternalNetworkConnectionString` (using network alias) and for the latter we'll be using `ApiConnectionString` (using hostname). Of course because the API will be called from the host machine, we also need to create the port binding for the `InternalApiPort`.
+The `MailFixture` is responsible for the MailHog container. There's no module for MailHog, so we'll need to manually specify the image. This is an interesting case since we will need both container-to-container communication (Notifier container will call this) and communication from the host machine as well (to assert we'll call the MailHog's API from the Test Process). For the former, we've created `InternalNetworkConnectionString` (using network alias) and for the latter, we'll be using `ApiConnectionString` (using hostname). Of course, because the API will be called from the host machine, we also need to create the port binding for the `InternalApiPort`.
 
 ```csharp
 using DotNet.Testcontainers.Builders;
@@ -394,7 +394,7 @@ public class BlogAdminFixture : IAsyncLifetime
 }
 ```
 
-Like mentioned before, `AppFixture` aggregates all of these container fixtures.
+As mentioned before, `AppFixture` aggregates all of these container fixtures.
 
 ```csharp
 using DataAccess;
@@ -565,13 +565,13 @@ public class FlowTest: IClassFixture<AppFixture>
 }
 ```
 
-Again, we can see that the test code itself is pretty straighforward and all of the Testcontainers setup is left to the `AppFixture` which allows you to not mix your test logic with the setup.
+Again, we can see that the test code itself is pretty straightforward and all of the Testcontainers setup is left to the `AppFixture` which allows you to not mix your test logic with the setup.
 
 Of course, this test should execute successfully. Make sure Docker is running (Testcontainers will try to connect to the locally running Docker host).
 
 ## CI
 
-Ideally we want to run these kind of tests during our Continuous Integration process. This is of course possible and pretty easy with GitHub Actions. Check out the [YAML file](https://github.com/BenasB/dotnet-e2e-testcontainers/blob/main/.github/workflows/dotnet.yml) in the example repository. For other providers there may be additional setup required, please refer to [Testcontainers for .NET](https://dotnet.testcontainers.org/cicd/).
+Ideally, we want to run these kinds of tests during our Continuous Integration process. This is of course possible and pretty easy with GitHub Actions. Check out the [YAML file](https://github.com/BenasB/dotnet-e2e-testcontainers/blob/main/.github/workflows/dotnet.yml) in the example repository. For other providers there may be additional setup required, please refer to [Testcontainers for .NET](https://dotnet.testcontainers.org/cicd/).
 
 ![GitHub Actions running the two examples successfully](raster/e2e-ci.png)
 
